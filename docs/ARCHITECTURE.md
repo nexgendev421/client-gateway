@@ -53,4 +53,6 @@ flowchart LR
 
 ## Current implementation status
 
-This repository currently contains the Laravel 12 application foundation, default framework health route, versioned API route mount, Blade/Tailwind starter view, and starter PHPUnit tests. The domain workflows above are architecture requirements only; no customer, activation, device, licensing, endpoint-monitoring, or administration business functionality has been implemented yet.
+The repository includes Laravel 12 foundations, default framework health route, versioned API route mount, and Blade/Tailwind starter view. Core metadata tables and Eloquent models now cover customers, stores, devices, hashed activation codes and device credentials, customer licences, endpoint health checks, audit logs, and system settings. The default Laravel `User` is the Router administrator identity. Reusable Form Requests provide initial validation for customer, store, activation-code, and device-registration inputs.
+
+No activation, licensing, device provisioning, endpoint-monitoring, audit-writing workflows, or administration UI has been implemented. Device activation secrets and credentials are represented only by hashes; logs redact sensitive metadata keys. Store and customer deletion is restricted while dependent operational history exists, while deleting a device cascades to its credentials.
