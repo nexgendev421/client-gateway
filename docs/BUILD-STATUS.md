@@ -214,24 +214,11 @@ Current phase: Complete (Phases 1-33)
 - Unresolved: Production values and host-level TLS/proxy configuration remain deployment-specific and are documented for the operator.
 - Next: Prepare Phase 29 production configuration guidance.
 
-### Phase 28 - Full Test Pass
-
-- Date: 2026-10-23.
-- Verification: Full suite passed with 134 tests and 884 assertions. `composer audit` reported no security advisories; production Vite build, route listing, scheduled-task listing, and `git diff --check` passed.
-- Open deployment considerations: Public hostname, TLS, reverse proxy addresses, and secrets are environment-specific.
-- Next: Complete production configuration guidance.
-
 ### Phase 29 - Production Configuration
 
 - Date: 2026-10-23.
 - Implementation: Added [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md), covering production environment values, TLS and proxy trust, sessions/cookies, shared cache/rate limits, database, logs, permissions, signing key loading/rotation, Scheduler, queue guidance, and Laravel release caches. No production secrets were added.
 - Verification: Documentation reviewed against current Laravel configuration and the Phase 26 security controls; `.env.example` remains placeholder-only.
-- Next: Create Phase 30 VPS deployment guide.
-
-### Phase 29 - Production Configuration
-
-- Date: 2026-10-23.
-- Implementation: Added [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md) with production settings and host-specific values kept as placeholders; no secrets or customer credentials.
 - Next: Create Phase 30 HestiaCP VPS deployment guide.
 
 ### Phase 30 - VPS Deployment Guide
@@ -241,24 +228,11 @@ Current phase: Complete (Phases 1-33)
 - Verification: Reviewed documented commands against repository scripts, admin provisioning command, scheduler and architecture; documentation whitespace check passed.
 - Next: Implement Phase 31 safe deployment script.
 
-### Phase 30 - VPS Deployment Guide
-
-- Date: 2026-10-23.
-- Implementation: Added HestiaCP/Ubuntu deployment guide with private clone, `public/` document root, least-privilege DB/deploy access, protected secrets/signing keys, TLS/Cloudflare trust, admin MFA, scheduled jobs, monitoring and rollback.
-- Next: Implement Phase 31 safe deployment script.
-
 ### Phase 31 - Safe Deployment Script
 
 - Date: 2026-10-23.
 - Implementation: Added `scripts/deploy.sh`: verifies app checkout, `.env`/APP_KEY, branch, clean tree and remote history; only fast-forwards; uses maintenance mode; installs Composer/npm dependencies, builds assets, runs forced migrations, rebuilds caches and requests queue restart. It never generates/replaces secrets, resets data or force overwrites changes. Deployment guide documents prerequisites, interruption and recovery.
 - Verification: `bash -n scripts/deploy.sh` and `git diff --check` passed. No production deployment was performed.
-- Next: Create Phase 32 backup/restore plan.
-
-### Phase 31 - Safe Deployment Script
-
-- Date: 2026-10-23.
-- Implementation: Added a fail-fast Bash deployment script and documented its prerequisites, maintenance impact, limits and recovery behavior. It rejects dirty/diverged checkouts and never regenerates or overwrites environment secrets.
-- Verification: Shell syntax and whitespace checks passed; production deployment was not run.
 - Next: Create Phase 32 backup and restore procedures.
 
 ### Phase 32 - Backup and Restore
