@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\AdminRole;
+use App\Enums\AdminStatus;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +25,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status',
     ];
 
     /**
@@ -45,7 +49,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => AdminRole::class,
+            'status' => AdminStatus::class,
         ];
+    }
+
+    public function isActiveAdmin(): bool
+    {
+        return $this->status === AdminStatus::Active;
     }
 
     public function createdActivationCodes(): HasMany

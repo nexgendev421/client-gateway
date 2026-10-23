@@ -17,7 +17,7 @@ class DeviceRegistrationRequest extends FormRequest
     {
         return [
             'store_id' => ['required', 'integer', 'exists:stores,id'],
-            'public_id' => ['required', 'uuid', 'unique:devices,public_id'],
+            'public_id' => ['required', 'string', 'min:8', 'max:64', 'regex:/^[A-Za-z0-9][A-Za-z0-9-]+$/', 'unique:devices,public_id'],
             'name' => ['required', 'string', 'max:255'],
             'platform' => ['required', Rule::enum(DevicePlatform::class)],
             'os_version' => ['nullable', 'string', 'max:100'],

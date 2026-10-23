@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('health_checks', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('store_id')->constrained()->restrictOnDelete();
-            $table->string('status')->default(HealthCheckStatus::Unreachable->value);
+            $table->string('status')->default(HealthCheckStatus::Offline->value);
             $table->unsignedInteger('response_time_ms')->nullable();
             $table->string('pos_version')->nullable();
             $table->string('api_version')->nullable();

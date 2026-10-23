@@ -14,6 +14,6 @@ class HealthCheckFactory extends Factory
 
     public function definition(): array
     {
-        return ['store_id' => Store::factory(), 'status' => HealthCheckStatus::Healthy, 'response_time_ms' => fake()->numberBetween(10, 500), 'pos_version' => '1.0.0', 'api_version' => '1', 'checked_at' => now(), 'safe_error_code' => null, 'safe_error_message' => null];
+        return ['store_id' => Store::factory(), 'status' => HealthCheckStatus::Online, 'response_time_ms' => fake()->numberBetween(10, 500), 'pos_version' => '1.0.0', 'api_version' => '1', 'checked_at' => now(), 'safe_error_code' => null, 'safe_error_message' => null];
     }
 }

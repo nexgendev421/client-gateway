@@ -14,7 +14,7 @@ This is the source of truth for the remaining structured build. Implement phases
 - Phase 8 — Activation code system
 
 ## Remaining phases
-## Phase 9 — PUBLIC DEVICE ACTIVATION API — IN PROGRESS
+## Phase 9 — PUBLIC DEVICE ACTIVATION API — COMPLETED
 ==================================================
 
 Implement:
@@ -68,7 +68,7 @@ Requirements:
 - meaningful tests
 
 ==================================================
-## Phase 10 — SIGNED PROVISIONING TOKENS — PENDING
+## Phase 10 — SIGNED PROVISIONING TOKENS — IN PROGRESS
 ==================================================
 
 Implement asymmetric signed provisioning tokens.

@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 9 — Public Device Activation API
+Current phase: 10 — Signed Provisioning Tokens
 
 ## Completed
 
@@ -17,13 +17,13 @@ These phases are marked complete based on the user's project history and the imp
 
 ## In Progress
 
-- Phase 9 — Public Device Activation API
+- Phase 10 — Signed Provisioning Tokens
 
-The existing `POST /api/v1/activation-codes/redeem` validates a bounded-use activation code, enforces active customer/store state, expiry, optional intended device name, and use count in a transaction. It is rate-limited and audits consumption. It currently returns store routing details only. It does not follow the Phase 9 contract at `POST /api/v1/activate`, create a Device, enforce Store/customer device limits, or issue a signed provisioning token. Complete these before marking Phase 9 done.
+The Phase 10 RS256 token foundation was implemented alongside Phase 9 because activation must return the requested short-lived provisioning token. Remaining Phase 10 work is to formalize key generation/loading/rotation in dedicated documentation, define a reusable verifier contract without implementing the customer POS repository, and add tests for expiry, tampering, wrong key, and wrong purpose.
 
 ## Pending
 
-- Phase 10 onward — see [`BUILD-ROADMAP.md`](BUILD-ROADMAP.md) for the ordered requirements.
+- Phase 11 onward — see [`BUILD-ROADMAP.md`](BUILD-ROADMAP.md) for the ordered requirements.
 
 ## Progress log
 
@@ -41,5 +41,16 @@ The existing `POST /api/v1/activation-codes/redeem` validates a bounded-use acti
 - **Date:** 2026-10-23
 - **Changes:** Added this status file, `BUILD-ROADMAP.md`, and root `AGENTS.md`; updated `ARCHITECTURE.md` with the Gateway/customer VPS boundary and first-run activation sequence.
 - **Tests:** No implementation changed for this documentation checkpoint; baseline suite above passed.
-- **Commit:** Pending selective safety review and documentation-only commit.
-- **Known risks:** The worktree already contains uncommitted application implementation; keep those changes out of a documentation-only commit.
+- **Commit:** `4aa2760` — `Add autonomous build roadmap and repository guidance`.
+- **Known risks:** The worktree already contained uncommitted application implementation; the guidance/roadmap was committed separately to avoid mixing it with that work.
+
+### Phase 9 — Public Device Activation API
+
+- **Date:** 2026-10-23
+- **Implementation:** Added `POST /api/v1/activate` with strict request validation and five-per-minute IP rate limiting. Successful activation resolves the store case-insensitively, verifies active customer/store, active non-expired code, device name binding, safe endpoint format, eligible customer licence, duplicate Device ID, store capacity and customer device capacity. Device creation, activation use increment, usage/provisioning audit entries, and token issuance run within the activation-code transaction. Public failures avoid customer/store enumeration.
+- **Token:** Returns business/store display names, endpoint URL, device reference, five-minute RS256 provisioning JWT, and expiry. Private key is loaded from an out-of-repository configured path. The client ID column now accepts a bounded 64-character identifier.
+- **Verification:** Full suite — 52 passed, 327 assertions; `migrate:fresh` passed on SQLite; `npm run build` passed; targeted Pint passed; `git diff --check` passed. A temporary RSA smoke test verified the signature, purpose, and 300-second TTL using a key under the OS temp directory; no key was added to the repository.
+- **Pint note:** Repository-wide `pint --test` still reports formatting in untouched `bootstrap/providers.php` and `config/auth.php`; changed files pass targeted Pint.
+- **Commit:** Pending review of the existing application changes in the worktree.
+- **Known risks:** Phase 9 uses the Phase 10 token issuer foundation. Production activation intentionally returns a safe 503 until a signing key path is configured. Customer POS verification and registration remain out of this repository's implementation scope.
+- **Next:** Complete Phase 10 verification tests and `docs/DEVICE-PROVISIONING.md`.
