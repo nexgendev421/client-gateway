@@ -249,3 +249,10 @@ Current phase: Complete (Phases 1-33)
 - Final report: [FINAL-READINESS.md](FINAL-READINESS.md) records the architecture boundary, controls, verification results, integration boundaries and remaining operator work.
 - Verification: 134 tests and 884 assertions passed; Composer audit reported no advisories; production frontend build, artisan route/schedule listings, deployment script syntax, and `git diff --check` passed.
 - Status: All roadmap phases are complete. No production deploy was performed.
+
+### Local development setup follow-up
+
+- Date: 2026-10-23.
+- Finding: First local sign-in attempt revealed the XAMPP `.env` referenced a nonexistent Router database/account. After creating a dedicated local account, MariaDB 10.4 exposed legacy implicit `TIMESTAMP` defaults in required date fields and its `mysql.db` privilege table was marked crashed.
+- Resolution: Backed up and repaired the local MariaDB privilege table, created a least-privilege `siyazpos_router` database account, changed required application dates in fresh-install migrations to `DATETIME`, and reran all 20 migrations successfully. Created a local super-admin account; no credentials are recorded here.
+- Verification: Full suite passed with 134 tests and 884 assertions; `migrate:status` showed all migrations ran, MariaDB confirmed one active super admin and 20 application tables, and `http://localhost:8001/login` returned HTTP 200 with the login form.

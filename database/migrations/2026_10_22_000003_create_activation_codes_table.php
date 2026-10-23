@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('store_id')->constrained()->restrictOnDelete();
             $table->string('code_hash', 128)->unique();
             $table->string('masked_suffix', 8)->nullable();
-            $table->timestamp('expires_at')->index();
+            $table->dateTime('expires_at')->index();
             $table->unsignedSmallInteger('max_uses')->default(1);
             $table->unsignedSmallInteger('used_count')->default(0);
             $table->string('status')->default(ActivationCodeStatus::Active->value)->index();

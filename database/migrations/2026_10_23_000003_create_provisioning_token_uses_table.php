@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('device_id')->constrained()->cascadeOnDelete();
             $table->char('jti_hash', 64)->unique();
-            $table->timestamp('used_at');
-            $table->timestamp('expires_at')->index();
+            $table->dateTime('used_at');
+            $table->dateTime('expires_at')->index();
             $table->timestamps();
             $table->index(['device_id', 'expires_at']);
         });

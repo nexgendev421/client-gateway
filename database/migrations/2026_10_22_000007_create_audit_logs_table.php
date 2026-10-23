@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('resource_id', 100)->nullable();
             $table->json('metadata')->nullable();
             $table->string('ip_address', 45)->nullable();
-            $table->timestamp('occurred_at')->index();
+            $table->dateTime('occurred_at')->index();
             $table->timestamps();
             $table->index(['resource_type', 'resource_id']);
             $table->index(['actor_id', 'occurred_at']);

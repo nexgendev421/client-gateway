@@ -21,6 +21,7 @@ Review date: 2026-10-23
 ## Validation performed
 
 - Full suite: 134 tests, 884 assertions, zero failures.
+- Fresh migration pass on XAMPP MariaDB 10.4.32 completed all 20 migrations. Required application date fields use `DATETIME` so fresh installs do not depend on MariaDB's legacy implicit `TIMESTAMP` defaults.
 - `composer audit`: no security vulnerability advisories.
 - Production Vite asset build passed.
 - Artisan route listing and scheduled-task listing completed; health check and retention tasks are registered.

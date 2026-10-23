@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('response_time_ms')->nullable();
             $table->string('pos_version')->nullable();
             $table->string('api_version')->nullable();
-            $table->timestamp('checked_at')->index();
+            $table->dateTime('checked_at')->index();
             $table->string('safe_error_code', 80)->nullable();
             $table->string('safe_error_message', 500)->nullable();
             $table->timestamps();

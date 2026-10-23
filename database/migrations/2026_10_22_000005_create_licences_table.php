@@ -14,9 +14,9 @@ return new class extends Migration
             $table->foreignId('customer_id')->unique()->constrained()->restrictOnDelete();
             $table->string('plan');
             $table->string('status')->default(LicenceStatus::Trial->value)->index();
-            $table->timestamp('starts_at');
-            $table->timestamp('valid_until')->index();
-            $table->timestamp('grace_until')->nullable();
+            $table->dateTime('starts_at');
+            $table->dateTime('valid_until')->index();
+            $table->dateTime('grace_until')->nullable();
             $table->unsignedSmallInteger('max_stores')->nullable();
             $table->unsignedSmallInteger('max_devices')->nullable();
             $table->json('metadata')->nullable();
