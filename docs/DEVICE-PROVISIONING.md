@@ -53,6 +53,12 @@ The Router stores only a one-way hash of the credential, a short lookup prefix, 
 
 The customer POS separately validates and consumes the same provisioning token in its own registration database. Router-side `jti` consumption protects the credential exchange; local POS-side consumption protects local registration. The resulting Router credential is for control-plane APIs such as heartbeat and config, not for routing POS sales.
 
+### Heartbeat and device config
+
+Authenticated clients call `POST /api/v1/device/heartbeat` with `app_version`, `os_version`, and the registered `platform`. Platform changes are rejected. The Router updates version telemetry, `last_seen_at`, and the request IP; it does not store user, transaction, or POS business data in heartbeat records. The API is limited to 60 requests per minute per device.
+
+Authenticated `GET /api/v1/device/config` returns the assigned business/store names and endpoint, device reference/name/status, a minimal licence summary, the minimum supported and recommended client versions for that platform, and an optional plain-text maintenance notice. Version and maintenance settings are read from the whitelisted `SystemSetting` keys `minimum_windows_version`, `recommended_windows_version`, `minimum_android_version`, `recommended_android_version`, and `maintenance_notice`. The config response contains no secrets and is marked `no-store`.
+
 ## Local development
 
 Tests generate ephemeral RSA keys in the operating system temporary directory. For a local activation smoke test, create a development-only key pair outside the repository, configure the private-key variables and matching public-key map, and never reuse development keys in production.

@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 13 - Device Heartbeat + Config API
+Current phase: 14 - Licensing Foundation
 
 ## Completed
 
@@ -9,14 +9,15 @@ Current phase: 13 - Device Heartbeat + Config API
 - Phase 10: Signed provisioning token issuer, verifier contract, and key operations documentation.
 - Phase 11: Device directory and lifecycle management.
 - Phase 12: Hashed device credentials with one-time provisioning exchange, authentication middleware, rotation, and revocation.
+- Phase 13: Authenticated device heartbeat and config APIs.
 
 ## In Progress
 
-- Phase 13 - Device Heartbeat + Config API.
+- Phase 14 - Licensing Foundation.
 
 ## Pending
 
-- Phases 14-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 15-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -57,9 +58,18 @@ Current phase: 13 - Device Heartbeat + Config API
 - Date: 2026-10-23.
 - Implementation: Added high-entropy `sypd_` bearer credentials, one-way hash storage, one-time provisioning-token exchange with hashed `jti` replay tracking, active-device/store/customer checks, authentication middleware, safe credential rotation and revocation endpoints, and cascading admin device revocation. API responses are `no-store`; credentials are accepted only in Authorization headers and never in URLs. Credential lifecycle changes are audited.
 - Verification: 6 focused credential tests passed, 45 assertions; full suite passed with 69 tests and 443 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
-- Commit: Pending.
-- Scope note: Credentials authorize Router control-plane calls. Customer POS sales traffic still connects directly to the customer VPS. Heartbeat and config routes are Phase 13.
+- Commit: `761dd16` - `Add secure device credential lifecycle`.
+- Scope note: Credentials authorize Router control-plane calls. Customer POS sales traffic still connects directly to the customer VPS.
 - Next: Implement Phase 13 heartbeat and config APIs.
+
+### Phase 13 - Device Heartbeat and Config API
+
+- Date: 2026-10-23.
+- Implementation: Added authenticated, per-device throttled heartbeat and config endpoints. Heartbeats validate safe app/OS version strings and registered platform, then update last-seen time, request IP, and versions. Config returns assigned business/store/endpoint and device details, minimal inherited licence data, platform-specific minimum/recommended versions, and an optional sanitized maintenance notice from whitelisted setting keys. API responses are no-store; no POS transactional or customer product data is collected.
+- Verification: 4 focused feature tests passed, 34 assertions; full suite passed with 73 tests and 477 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
+- Commit: Pending.
+- Known limits: Minimum/recommended version settings are read-only until Phase 20/24 administration. Device offline threshold remains 24 hours for current directory filters.
+- Next: Implement Phase 14 licensing administration foundation.
 
 ### Build harness and repository guidance
 

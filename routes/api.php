@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ActivationController;
+use App\Http\Controllers\Api\DeviceControlController;
 use App\Http\Controllers\Api\DeviceCredentialController;
 use App\Http\Middleware\AuthenticateDeviceCredential;
 use Illuminate\Support\Facades\Route;
@@ -16,5 +17,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::middleware([AuthenticateDeviceCredential::class, 'throttle:device-credentials'])->prefix('device/credential')->name('device.credential.')->group(function (): void {
         Route::post('/rotate', [DeviceCredentialController::class, 'rotate'])->name('rotate');
         Route::post('/revoke', [DeviceCredentialController::class, 'revoke'])->name('revoke');
+    });
+    Route::middleware([AuthenticateDeviceCredential::class, 'throttle:device-api'])->prefix('device')->name('device.')->group(function (): void {
+        Route::post('/heartbeat', [DeviceControlController::class, 'heartbeat'])->name('heartbeat');
+        Route::get('/config', [DeviceControlController::class, 'config'])->name('config');
     });
 });

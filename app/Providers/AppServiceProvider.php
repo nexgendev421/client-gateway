@@ -34,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('device-activation', fn (Request $request): Limit => Limit::perMinute(5)->by('device-activation|'.$request->ip()));
         RateLimiter::for('device-credentials', fn (Request $request): Limit => Limit::perMinute(10)->by('device-credentials|'.$request->ip()));
+        RateLimiter::for('device-api', fn (Request $request): Limit => Limit::perMinute(60)->by(
+            'device-api|'.($request->attributes->get('device')?->getKey() ?? $request->ip()),
+        ));
 
         Gate::before(function (User $user): ?bool {
             if (! $user->isActiveAdmin()) {

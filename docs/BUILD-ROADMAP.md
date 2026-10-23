@@ -206,7 +206,7 @@ Tests:
 - rotation
 
 ==================================================
-## Phase 13 — DEVICE HEARTBEAT + CONFIG API — IN PROGRESS
+## Phase 13 — DEVICE HEARTBEAT + CONFIG API — COMPLETED
 ==================================================
 
 Implement:
@@ -248,7 +248,7 @@ Rate limit.
 Add tests.
 
 ==================================================
-## Phase 14 — LICENSING FOUNDATION — PENDING
+## Phase 14 — LICENSING FOUNDATION — IN PROGRESS
 ==================================================
 
 Implement customer-level licensing.
