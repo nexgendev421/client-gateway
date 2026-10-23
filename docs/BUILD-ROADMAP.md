@@ -68,7 +68,7 @@ Requirements:
 - meaningful tests
 
 ==================================================
-## Phase 10 — SIGNED PROVISIONING TOKENS — IN PROGRESS
+## Phase 10 — SIGNED PROVISIONING TOKENS — COMPLETED
 ==================================================
 
 Implement asymmetric signed provisioning tokens.
