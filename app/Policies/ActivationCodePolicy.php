@@ -19,11 +19,11 @@ class ActivationCodePolicy
 
     public function create(User $user): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function revoke(User $user, ActivationCode $activationCode): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 }

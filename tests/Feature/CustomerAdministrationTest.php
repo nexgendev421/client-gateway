@@ -126,18 +126,19 @@ class CustomerAdministrationTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'customer.archived', 'resource_id' => (string) $customer->id]);
     }
 
-    public function test_support_role_can_view_customers_but_cannot_manage_them(): void
+    public function test_support_role_can_manage_customers_but_cannot_archive_them(): void
     {
         $support = User::factory()->withRole(AdminRole::Support)->create();
         $customer = Customer::factory()->create();
 
         $this->actingAs($support)->get(route('admin.customers.index'))->assertOk();
         $this->get(route('admin.customers.show', $customer))->assertOk();
-        $this->get(route('admin.customers.create'))->assertForbidden();
-        $this->get(route('admin.customers.edit', $customer))->assertForbidden();
-        $this->post(route('admin.customers.store'), ['business_name' => 'Denied Ltd'])->assertForbidden();
-        $this->put(route('admin.customers.update', $customer), ['business_name' => 'Denied Ltd'])->assertForbidden();
+        $this->get(route('admin.customers.create'))->assertOk();
+        $this->get(route('admin.customers.edit', $customer))->assertOk();
+        $this->post(route('admin.customers.store'), ['business_name' => 'Support Created Ltd'])->assertRedirect();
+        $this->put(route('admin.customers.update', $customer), ['business_name' => 'Support Updated Ltd'])->assertRedirect();
         $this->post(route('admin.customers.archive', $customer))->assertForbidden();
+        $this->assertSame('Support Updated Ltd', $customer->fresh()->business_name);
     }
 
     public function test_customer_detail_sections_render_and_archive_has_no_delete_route(): void

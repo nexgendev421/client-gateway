@@ -48,5 +48,6 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('view-router', fn (User $user): bool => in_array($user->role, [AdminRole::Support, AdminRole::ReadOnly], true));
         Gate::define('manage-router', fn (User $user): bool => false);
+        Gate::define('manage-operations', fn (User $user): bool => $user->role === AdminRole::Support);
     }
 }

@@ -19,26 +19,26 @@ class StorePolicy
 
     public function create(User $user): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function update(User $user, Store $store): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function changeStatus(User $user, Store $store): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function testConnection(User $user, Store $store): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function generateActivationCode(User $user, Store $store): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 }

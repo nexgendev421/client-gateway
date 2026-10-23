@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ActivationCodeController;
 use App\Http\Controllers\Admin\AdminSectionController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AppVersionController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -69,6 +70,13 @@ Route::middleware(['auth', EnsureAdminIsActive::class])->group(function (): void
     Route::post('/admin/licences/{licence}/extend', [LicenceController::class, 'extend'])->whereNumber('licence')->name('admin.licences.extend');
     Route::post('/admin/licences/{licence}/status/{state}', [LicenceController::class, 'transition'])->whereNumber('licence')->whereIn('state', ['past-due', 'grace', 'active', 'restricted', 'suspended', 'cancelled'])->name('admin.licences.transition');
     Route::get('/admin/licences/{licence}', [LicenceController::class, 'show'])->whereNumber('licence')->name('admin.licences.show');
+    Route::get('/admin/admin-users', [AdminUserController::class, 'index'])->name('admin.admin-users.index');
+    Route::get('/admin/admin-users/create', [AdminUserController::class, 'create'])->name('admin.admin-users.create');
+    Route::post('/admin/admin-users', [AdminUserController::class, 'store'])->name('admin.admin-users.store');
+    Route::get('/admin/admin-users/{adminUser}/edit', [AdminUserController::class, 'edit'])->whereNumber('adminUser')->name('admin.admin-users.edit');
+    Route::put('/admin/admin-users/{adminUser}', [AdminUserController::class, 'update'])->whereNumber('adminUser')->name('admin.admin-users.update');
+    Route::post('/admin/admin-users/{adminUser}/disable', [AdminUserController::class, 'disable'])->whereNumber('adminUser')->name('admin.admin-users.disable');
+    Route::post('/admin/admin-users/{adminUser}/enable', [AdminUserController::class, 'enable'])->whereNumber('adminUser')->name('admin.admin-users.enable');
     Route::get('/admin/{section}', AdminSectionController::class)
         ->whereIn('section', ['customers', 'stores', 'activation-codes', 'system-health', 'audit-logs', 'admin-users', 'settings'])
         ->name('admin.section');

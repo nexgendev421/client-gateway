@@ -17,14 +17,15 @@ Current phase: 21 - Admin Users and Roles
 - Phase 18: Controlled temporary emergency licence extensions.
 - Phase 19: Scheduled SSRF-safe endpoint checks, per-store lock, and history pruning.
 - Phase 20: Windows/Android app version administration, device config details, and outdated-device dashboard reporting.
+- Phase 21: Admin user lifecycle, role-based operational access, audit events, and last-super-admin protection.
 
 ## In Progress
 
-- Phase 21 - Admin Users and Roles.
+- Phase 22 - Admin MFA.
 
 ## Pending
 
-- Phases 22-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 23-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -131,8 +132,17 @@ Current phase: 21 - Admin Users and Roles
 - Existing behavior: Device config already exposed minimum and recommended version strings from legacy system settings.
 - Implementation: Added super-admin Windows/Android version settings for latest/minimum versions, HTTPS download URL, mandatory-update flag, and sanitized release notes. Preserved the legacy config fields and added latest/download/update/release-note fields. Dashboard counts and lists active devices with an unknown or older version. Admin changes are audited without copying release-note text or full download URLs. Added [APP-VERSIONS.md](APP-VERSIONS.md).
 - Verification: 11 focused tests passed, 81 assertions; full suite passed with 101 tests and 681 assertions; changed-file Pint, route listing, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `97c9d9b` - `Manage client app versions`.
 - Next: Implement Phase 21 admin users and roles.
+
+### Phase 21 - Admin Users and Roles
+
+- Date: 2026-10-23.
+- Existing behavior: Authentication already stored role/status enums, denied disabled users, and granted super admins full access. Support and read-only users were previously view-only.
+- Implementation: Added super-admin user search/list/create/edit/enable/disable, strong password set/reset, role/status changes, role-aware nav, and security audit events. Support can manage operational customer/store/device/activation workflows while remaining restricted from customer archive, permanent device revoke, licensing, app/system settings, audit tools, and admin accounts. Read-only remains view-only. Active super-admin row locks protect the last account from demotion/disable; self-disable is rejected. Added [ADMIN-ACCESS.md](ADMIN-ACCESS.md).
+- Verification: 6 focused admin-user tests passed, 38 assertions; full suite passed with 107 tests and 723 assertions; changed-file Pint, route listing, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 22 admin MFA.
 
 ### Build harness and repository guidance
 

@@ -19,6 +19,11 @@ class DevicePolicy
 
     public function manage(User $user, Device $device): bool
     {
+        return $user->can('manage-operations');
+    }
+
+    public function revoke(User $user, Device $device): bool
+    {
         return $user->can('manage-router');
     }
 }

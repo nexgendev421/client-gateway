@@ -50,16 +50,20 @@ class DeviceAdministrationTest extends TestCase
             ->assertSee('Rename device')->assertSee('Move to another store');
     }
 
-    public function test_support_and_read_only_admins_can_view_but_cannot_manage_devices(): void
+    public function test_support_can_manage_devices_while_read_only_can_only_view(): void
     {
         $device = Device::factory()->create();
 
-        foreach ([AdminRole::Support, AdminRole::ReadOnly] as $role) {
-            $this->actingAs(User::factory()->withRole($role)->create());
-            $this->get(route('admin.devices.index'))->assertOk();
-            $this->get(route('admin.devices.show', $device))->assertOk();
-            $this->post(route('admin.devices.disable', $device))->assertForbidden();
-        }
+        $this->actingAs(User::factory()->withRole(AdminRole::Support)->create());
+        $this->get(route('admin.devices.index'))->assertOk();
+        $this->get(route('admin.devices.show', $device))->assertOk();
+        $this->post(route('admin.devices.disable', $device))->assertRedirect();
+        $this->post(route('admin.devices.revoke', $device))->assertForbidden();
+
+        $this->actingAs(User::factory()->withRole(AdminRole::ReadOnly)->create());
+        $this->get(route('admin.devices.index'))->assertOk();
+        $this->get(route('admin.devices.show', $device))->assertOk();
+        $this->post(route('admin.devices.reactivate', $device))->assertForbidden();
     }
 
     public function test_admin_can_rename_and_move_device_only_within_its_customer(): void

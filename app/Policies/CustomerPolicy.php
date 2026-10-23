@@ -19,17 +19,17 @@ class CustomerPolicy
 
     public function create(User $user): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function update(User $user, Customer $customer): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function changeStatus(User $user, Customer $customer): bool
     {
-        return $user->can('manage-router');
+        return $user->can('manage-operations');
     }
 
     public function archive(User $user, Customer $customer): bool

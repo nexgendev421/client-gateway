@@ -123,6 +123,8 @@ class DeviceController extends Controller
 
     public function revoke(Request $request, Device $device): RedirectResponse
     {
+        $this->authorize('revoke', $device);
+
         return $this->changeStatus($request, $device, [DeviceStatus::Active, DeviceStatus::Disabled], DeviceStatus::Revoked, 'device.revoked', 'Device permanently revoked.');
     }
 

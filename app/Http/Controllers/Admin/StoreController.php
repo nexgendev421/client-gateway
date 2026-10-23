@@ -98,7 +98,7 @@ class StoreController extends Controller
     {
         $this->authorize('update', $store);
         $customers = Customer::query()->where('status', '!=', CustomerStatus::Archived)
-            ->orWhereKey($store->customer_id)
+            ->orWhere('id', $store->customer_id)
             ->orderBy('business_name')
             ->get();
 

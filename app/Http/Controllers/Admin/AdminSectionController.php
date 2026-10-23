@@ -17,6 +17,9 @@ class AdminSectionController extends Controller
     public function __invoke(string $section): View
     {
         abort_unless(array_key_exists($section, self::SECTIONS), 404);
+        if ($section === 'audit-logs') {
+            $this->authorize('manage-router');
+        }
 
         return view('admin.placeholder', [
             'activeNav' => $section,

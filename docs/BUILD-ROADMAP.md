@@ -495,7 +495,7 @@ Do not build client updater.
 Add tests.
 
 ==================================================
-## Phase 21 â€” ADMIN USERS + ROLES â€” PENDING
+## Phase 21 â€” ADMIN USERS + ROLES â€” COMPLETED
 ==================================================
 
 Implement complete admin management.

@@ -269,18 +269,19 @@ class StoreAdministrationTest extends TestCase
         }
     }
 
-    public function test_support_can_view_stores_but_cannot_change_them(): void
+    public function test_support_can_manage_store_operations_but_not_sensitive_router_settings(): void
     {
         $store = Store::factory()->create();
         $this->actingAs(User::factory()->withRole(AdminRole::Support)->create());
 
         $this->get(route('admin.stores.index'))->assertOk();
         $this->get(route('admin.stores.show', $store))->assertOk();
-        $this->get(route('admin.stores.create'))->assertForbidden();
-        $this->get(route('admin.stores.edit', $store))->assertForbidden();
-        $this->post(route('admin.stores.suspend', $store))->assertForbidden();
-        $this->post(route('admin.stores.test-connection', $store))->assertForbidden();
-        $this->post(route('admin.stores.activation-codes.store', $store))->assertForbidden();
+        $this->get(route('admin.stores.create'))->assertOk();
+        $this->get(route('admin.stores.edit', $store))->assertOk();
+        $this->post(route('admin.stores.activation-codes.store', $store), ['expires_in_hours' => 24, 'max_uses' => 1])->assertOk();
+        $this->post(route('admin.stores.suspend', $store))->assertRedirect(route('admin.stores.show', $store));
+        $this->get(route('admin.admin-users.index'))->assertForbidden();
+        $this->get(route('admin.settings.app-versions'))->assertForbidden();
     }
 
     public function test_store_detail_shows_required_live_relationship_data_and_has_no_delete_route(): void
