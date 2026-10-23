@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 33 - Final Architecture Review
+Current phase: Complete (Phases 1-33)
 
 ## Completed
 
@@ -28,15 +28,16 @@ Current phase: 33 - Final Architecture Review
 - Phase 29: Added production configuration guide for HTTPS/proxy trust, sessions, shared rate-limit cache, database/log permissions, signing keys, scheduler and release caches. `.env.example` remains placeholder-only.
 - Phase 30: Added Ubuntu/HestiaCP deployment procedure including isolated Laravel public root, production setup, TLS/Cloudflare, Scheduler, monitoring, releases and rollback.
 - Phase 31: Added guarded `scripts/deploy.sh` for clean-branch fast-forward releases, dependencies/assets, migrations and cache rebuilds; verified syntax without deploying.
-- Phase 28: Full regression suite passed: 134 tests and 884 assertions. `composer audit` reported no advisories; production asset build, route list, scheduler list, and diff whitespace checks passed.
+- Phase 32: Added encrypted backup, off-site retention, restore and disaster-recovery guidance for Router database, APP_KEY and signing keys.
+- Phase 33: Reconciled architecture documentation with scheduled health monitoring and offline-verifiable licence documents; completed final readiness review.
 
 ## In Progress
 
-- Phase 33 - Final Architecture Review (in progress).
+- None; roadmap Phases 1-33 are complete.
 
 ## Pending
 
-- Phase 33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- None.
 
 ## Progress log
 
@@ -266,3 +267,11 @@ Current phase: 33 - Final Architecture Review
 - Implementation: Added [BACKUP-RESTORE.md](BACKUP-RESTORE.md), covering daily DB dumps, retention/off-site encryption, protected APP_KEY/signing-key recovery, import procedure, isolated restore tests, and disaster recovery. No paid provider is assumed and no credentials are included.
 - Verification: Documentation cross-checked against current schema, key configuration and deployment architecture; `git diff --check` passed.
 - Next: Perform Phase 33 final architecture review.
+
+### Phase 33 - Final Architecture Review
+
+- Date: 2026-10-23.
+- Review: Updated [ARCHITECTURE.md](ARCHITECTURE.md) to reflect scheduled endpoint checks and distinguish expiring provisioning tokens from offline-verifiable signed licence documents. Confirmed Router-owned schema contains only control-plane data, APIs do not proxy sales traffic, and the deployment/security/backup documentation is consistent with current implementation.
+- Final report: [FINAL-READINESS.md](FINAL-READINESS.md) records the architecture boundary, controls, verification results, integration boundaries and remaining operator work.
+- Verification: 134 tests and 884 assertions passed; Composer audit reported no advisories; production frontend build, artisan route/schedule listings, deployment script syntax, and `git diff --check` passed.
+- Status: All roadmap phases are complete. No production deploy was performed.
