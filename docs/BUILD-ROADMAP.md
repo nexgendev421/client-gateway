@@ -644,7 +644,7 @@ Validate and audit.
 Tests.
 
 ==================================================
-## Phase 25 â€” DEVICE ACTIVATION UI â€” PENDING
+## Phase 25 â€” DEVICE ACTIVATION UI â€” COMPLETE
 ==================================================
 
 Build minimal first-run activation UI suitable for:

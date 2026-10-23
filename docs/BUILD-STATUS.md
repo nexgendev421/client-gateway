@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 25 - Device Activation UI
+Current phase: 26 - Security Hardening
 
 ## Completed
 
@@ -21,14 +21,15 @@ Current phase: 25 - Device Activation UI
 - Phase 22: Encrypted TOTP setup and sign-in challenge, hashed one-use recovery codes, mandatory super-admin MFA, throttling, account security screens, and recovery documentation.
 - Phase 23: Consistent sign-in/security audit events, searchable and filterable super-admin audit log, recursive secret/token redaction, and before/after store endpoint host snapshots.
 - Phase 24: Central non-secret settings administration for activation defaults, health frequency/retention, heartbeat expectations, licence grace, support contact and maintenance notices; existing app-version management remains the version editor.
+- Phase 25: First-run touch-friendly activation page for Windows/Android WebViews, using the existing activation API and an in-memory native provisioning handoff.
 
 ## In Progress
 
-- Phase 25 - Device Activation UI (in progress).
+- Phase 26 - Security Hardening (in progress).
 
 ## Pending
 
-- Phases 26-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 27-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -168,6 +169,13 @@ Current phase: 25 - Device Activation UI
 - Verification: Focused Router Settings, health monitoring, activation, licence, device, app-version, and System Health tests passed; full suite passed with 129 tests and 850 assertions. Changed-file Pint, settings route listing, scheduled task listing, and `git diff --check` passed.
 - Commit: `69454ea` - `Add central Router settings`.
 - Next: Implement Phase 25 device activation UI.
+### Phase 25 - Device Activation UI
+
+- Date: 2026-10-23.
+- Implementation: Added `/activate` as a mobile/WebView first-run screen that calls the existing activation API, validates optional wrapper metadata, displays the device identifier and progress, and presents safe activation/rate-limit/service/network errors. Successful provisioning data is sent in memory over the WebView2 or Android bridge (with a browser event fallback); tokens and activation codes are never placed in URLs, displayed, logged, or persisted by the page. Added [DEVICE-ACTIVATION-UI.md](DEVICE-ACTIVATION-UI.md) with wrapper query parameters and native handoff requirements.
+- Verification: 3 activation UI tests passed, 20 assertions; full suite passed with 132 tests and 870 assertions. `npm run build`, changed-file Pint, activation route listing, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 26 security hardening.
 ### Build harness and repository guidance
 
 - Date: 2026-10-23.

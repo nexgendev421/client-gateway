@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\MfaChallengeController;
+use App\Http\Controllers\DeviceActivationPageController;
 use App\Http\Middleware\EnsureAdminIsActive;
 use App\Http\Middleware\EnsureAdminMfaIsVerified;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : view('auth.login');
 });
+
+Route::get('/activate', DeviceActivationPageController::class)->name('device.activation.start');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
