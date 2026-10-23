@@ -1,12 +1,12 @@
 # SiyazPOS Router VPS deployment (HestiaCP)
 
-This guide deploys the central Router service to `siyazposrouter.top` on an Ubuntu VPS managed by HestiaCP. It is an operator-run procedure, not an installer. Replace every placeholder. Do not paste real secrets into Git, tickets, or shell history. Confirm the production topology with the hosting provider before opening firewall ports.
+This guide deploys the central Router service to `siyazposrouter.top` on an Ubuntu VPS managed by HestiaCP. The first-run web installer writes protected environment settings, generates application/provisioning keys, migrates the database and creates the first super administrator. Replace every placeholder. Do not paste real secrets into Git, tickets, or shell history. Confirm the production topology with the hosting provider before opening firewall ports.
 
 ## 1. Prepare the host and domain
 
 1. Point the domain DNS to the VPS. If Cloudflare proxying is enabled, keep the origin web ports restricted to Cloudflare ranges where practical and keep SSH restricted to operator IPs.
 2. In HestiaCP, create the domain under a dedicated unprivileged web user, enable SSL, and set a PHP version supported by the repository (`composer.json` currently requires PHP 8.2 or later). Enable required PHP extensions including PDO MySQL, OpenSSL, cURL, Mbstring, XML, Fileinfo, Tokenizer, Ctype, JSON, and Sodium.
-3. Create a dedicated MariaDB database and user in HestiaCP. Grant that user access only to the Router database. Keep the database local/private; do not expose port 3306 publicly.
+3. Create an empty dedicated MariaDB database and user in HestiaCP. Grant that user access only to the Router database. Keep the database local/private; do not expose port 3306 publicly.
 4. Create a dedicated SSH deploy key for this VPS and add only its read access to the Router GitHub repository. Verify host key fingerprints. Do not use a personal SSH key or a broad GitHub token on the server.
 
 ## 2. Clone into a private release directory
@@ -36,21 +36,15 @@ Install PHP dependencies without development packages:
 composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 ```
 
-Create `.env` in the private repository root with owner-only permissions, using [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md) as the source of required settings. Configure:
+Open `https://router.example.com/install` and enter the canonical HTTPS Router URL, the database host/port/name/user/password, and the initial super administrator name/email/password. The database and dedicated database user must already exist in HestiaCP, and the user must have schema privileges on that empty database. Submit the form only over HTTPS.
 
-- `APP_ENV=production`, `APP_DEBUG=false`, canonical HTTPS `APP_URL`, unique `APP_KEY`.
-- Dedicated database host/name/user/password, TLS if supported, and no public database listener.
-- HTTPS `ROUTER_PROVISIONING_ISSUER`, unique signing key ID, and key paths.
-- Session encryption, secure HTTP-only cookies, durable session/cache storage, and safe log channel/level.
-- Mail transport if account recovery/operational notifications are configured.
+The installer creates a protected `.env`, a unique `APP_KEY`, a per-install RSA provisioning key pair under `storage/app/private/provisioning`, secure database-backed sessions/cache, the database schema, and the initial active `super_admin`. The initial administrator must enroll in MFA at first sign-in. After successful installation `/install` is disabled. The installer does not configure DNS, TLS, host firewall, scheduler, backups, or distribute the generated public signing key to POS/client verifiers.
 
-After creating the protected `.env`, generate an `APP_KEY` once with `php artisan key:generate`; confirm the file remains owner-readable only. Do not run this again on an existing installation. Generate an RSA signing key outside the repository and web root, restrict it to the PHP service account (for example directory mode `0700`, file mode `0600`), and place public PEM files where only intended verifiers can read them. Do not put private PEM material in a public directory or source control. Back up the secrets separately in encrypted storage.
-
-Use a temporary protected secret input method rather than command arguments when possible. Shell commands and process listings can expose values. Never commit `.env` or print it into deployment logs.
+Keep `.env` and the generated private key outside the public document root and readable only by the PHP service account. Back them up separately in encrypted storage. Never commit `.env` or print it into deployment logs. See [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md) for proxy, session, signing key, scheduler, and operations settings.
 
 ## 5. Initialise and verify
 
-From the private application directory:
+After the installer reports success, verify the application from the private directory:
 
 ```sh
 php artisan config:clear
@@ -59,10 +53,9 @@ php artisan storage:link
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-php artisan router:admin:create
 ```
 
-Run the admin creation command interactively and choose a unique strong password. No default administrator is seeded. Sign in over HTTPS, enroll the super administrator in MFA, and store recovery codes securely. Do not disable MFA to simplify setup.
+The installer already creates the initial super administrator; no default credentials are seeded. Sign in over HTTPS, enroll the super administrator in MFA, and store recovery codes securely. Do not disable MFA to simplify setup.
 
 The storage link is only needed for assets intentionally served from Laravel's public storage disk; product/customer POS uploads do not belong on Router. Inspect the target before creating a link and do not expose private storage.
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\MfaChallengeController;
 use App\Http\Controllers\DeviceActivationPageController;
+use App\Http\Controllers\InstallationController;
 use App\Http\Middleware\EnsureAdminIsActive;
 use App\Http\Middleware\EnsureAdminMfaIsVerified;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::get('/', function () {
 });
 
 Route::get('/activate', DeviceActivationPageController::class)->name('device.activation.start');
+Route::get('/install', [InstallationController::class, 'create'])->name('install.create');
+Route::post('/install', [InstallationController::class, 'store'])->middleware('throttle:5,1')->name('install.store');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
