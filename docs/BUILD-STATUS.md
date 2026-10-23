@@ -166,7 +166,7 @@ Current phase: 25 - Device Activation UI
 - Date: 2026-10-23.
 - Implementation: Added a super-admin central settings page and validated non-secret settings storage. Activation defaults prefill new code forms; the scheduled health runner applies a configurable interval, history pruning reads configurable retention, and device offline filtering uses three times the expected heartbeat interval. Device config now includes heartbeat interval, support contact, and a central maintenance notice. Grace transitions use the configured default unless a custom end date is supplied. Windows/Android version rules continue to use the existing app-version page, linked from central settings.
 - Verification: Focused Router Settings, health monitoring, activation, licence, device, app-version, and System Health tests passed; full suite passed with 129 tests and 850 assertions. Changed-file Pint, settings route listing, scheduled task listing, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `69454ea` - `Add central Router settings`.
 - Next: Implement Phase 25 device activation UI.
 ### Build harness and repository guidance
 
