@@ -417,7 +417,7 @@ Tests:
 - existing over-limit customer
 
 ==================================================
-## Phase 18 â€” EMERGENCY LICENCE EXTENSIONS â€” PENDING
+## Phase 18 â€” EMERGENCY LICENCE EXTENSIONS â€” IN PROGRESS
 ==================================================
 
 Implement controlled temporary extension:

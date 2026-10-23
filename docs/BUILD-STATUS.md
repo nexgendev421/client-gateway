@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 17 - Licence Limit Enforcement
+Current phase: 18 - Emergency Licence Extensions
 
 ## Completed
 
@@ -17,11 +17,11 @@ Current phase: 17 - Licence Limit Enforcement
 
 ## In Progress
 
-- Phase 18 - App Version Management.
+- Phase 18 - Emergency Licence Extensions.
 
 ## Pending
 
-- Phases 18-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 19-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -102,8 +102,17 @@ Current phase: 17 - Licence Limit Enforcement
 - Date: 2026-10-23.
 - Implementation: Centralized licence-capacity counts; store creation and customer moves now enforce `max_stores` under customer row locks. Device activation enforces per-store and customer-wide `max_devices`, with revoked devices freeing slots. Customer licence and store pages show each applicable limit and usage, including over-limit states; reducing a limit never disables existing stores or devices.
 - Verification: 28 focused tests passed, 207 assertions; full suite passed with 91 tests and 612 assertions; SQLite `migrate:fresh`, changed-file Pint, route listing, and `git diff --check` passed.
+- Commit: `7125a86` - `Enforce customer licence limits`.
+- Next: Implement Phase 18 emergency licence extensions.
+
+### Phase 18 - Emergency Licence Extensions
+
+- Date: 2026-10-23.
+- Existing behavior: Licence expiry updates already had a protected admin action, required reason, actor attribution, audit history, and signed-token fields sourced from the persisted licence.
+- Implementation: Added controlled one-, three-, and seven-day extensions, plus an explicit custom expiry option. Extensions from an already expired licence count from the current time. The audit entry retains old/new expiry, old/new status, extension type, reason, and actor; custom expiry must be later than the current expiry or now, whichever is later.
+- Verification: 6 focused tests passed, 76 assertions; full suite passed with 92 tests and 628 assertions; changed-file Pint and `git diff --check` passed.
 - Commit: Pending.
-- Next: Implement Phase 18 app version management.
+- Next: Implement Phase 19 automated health monitoring.
 
 ### Build harness and repository guidance
 

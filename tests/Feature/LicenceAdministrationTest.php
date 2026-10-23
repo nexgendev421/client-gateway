@@ -8,7 +8,10 @@ use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Licence;
 use App\Models\User;
+use App\Services\AsymmetricJwtSigner;
+use App\Services\LicenceTokenIssuer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class LicenceAdministrationTest extends TestCase
@@ -134,11 +137,15 @@ class LicenceAdministrationTest extends TestCase
 
         $extendedTo = now()->addDays(30)->format('Y-m-d H:i:s');
         $this->post(route('admin.licences.extend', $licence), [
+            'duration' => 'custom',
             'valid_until' => $extendedTo,
             'reason' => 'Customer renewal payment received',
         ])->assertSessionHasNoErrors();
         $this->assertTrue($licence->fresh()->valid_until->gt(now()->addDays(29)));
-        $this->assertDatabaseHas('audit_logs', ['action' => 'licence.extended', 'resource_id' => (string) $licence->id]);
+        $extensionAudit = AuditLog::query()->where('action', 'licence.extended')->where('resource_id', (string) $licence->id)->firstOrFail();
+        $this->assertSame($admin->id, $extensionAudit->actor_id);
+        $this->assertSame('custom', $extensionAudit->metadata['duration']);
+        $this->assertSame(Carbon::parse($extendedTo)->toIso8601String(), $extensionAudit->metadata['to_valid_until']);
 
         $this->post(route('admin.licences.transition', [$licence, 'grace']), [
             'grace_until' => now()->addDays(40)->format('Y-m-d H:i:s'),
@@ -167,5 +174,38 @@ class LicenceAdministrationTest extends TestCase
         $auditReason = json_encode(AuditLog::query()->where('action', 'licence.restored_active')->value('metadata'));
         $this->assertStringNotContainsString('sypd_', $auditReason);
         $this->assertStringNotContainsString('1234-5678', $auditReason);
+    }
+
+    public function test_emergency_extension_supports_bounded_day_choices_and_custom_expiry_validation(): void
+    {
+        $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
+        $licence = Licence::factory()->create([
+            'valid_until' => now()->subDay(),
+            'status' => LicenceStatus::PastDue,
+        ]);
+        $this->actingAs($admin);
+        $this->get(route('admin.licences.show', $licence))->assertOk()
+            ->assertSee('Emergency extension')->assertSee('1 day')->assertSee('3 days')->assertSee('7 days');
+
+        $this->from(route('admin.licences.show', $licence))
+            ->post(route('admin.licences.extend', $licence), ['duration' => 'custom', 'reason' => 'Emergency access'])
+            ->assertSessionHasErrors('valid_until');
+        $this->assertTrue($licence->fresh()->valid_until->isPast());
+
+        $this->post(route('admin.licences.extend', $licence), [
+            'duration' => '3',
+            'reason' => 'Three day temporary extension',
+        ])->assertSessionHasNoErrors();
+
+        $extended = $licence->fresh();
+        $this->assertTrue($extended->valid_until->between(now()->addDays(2)->subMinute(), now()->addDays(3)->addMinute()));
+        $audit = AuditLog::query()->where('action', 'licence.extended')->firstOrFail();
+        $this->assertSame('3 days', $audit->metadata['duration']);
+        $this->assertTrue($audit->metadata['from_valid_until'] !== $audit->metadata['to_valid_until']);
+
+        $signer = \Mockery::mock(AsymmetricJwtSigner::class);
+        $signer->shouldReceive('sign')->once()->with(\Mockery::on(fn (array $claims): bool => $claims['valid_until'] === $extended->valid_until->timestamp))->andReturn('signed.extension');
+        $issued = (new LicenceTokenIssuer($signer))->issue($extended);
+        $this->assertSame('signed.extension', $issued['token']);
     }
 }

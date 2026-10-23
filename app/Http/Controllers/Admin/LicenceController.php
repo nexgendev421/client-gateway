@@ -115,7 +115,8 @@ class LicenceController extends Controller
     {
         $this->authorize('changeStatus', $licence);
         $data = $request->validate([
-            'valid_until' => ['required', 'date', 'after:'.$licence->valid_until->format('Y-m-d H:i:s')],
+            'duration' => ['required', Rule::in(['1', '3', '7', 'custom'])],
+            'valid_until' => ['nullable', 'required_if:duration,custom', 'date'],
             'reason' => ['required', 'string', 'min:3', 'max:500'],
         ]);
 
@@ -123,7 +124,13 @@ class LicenceController extends Controller
             $locked = Licence::query()->lockForUpdate()->findOrFail($licence->getKey());
             $oldStatus = $locked->status;
             $oldExpiry = $locked->valid_until;
-            $newExpiry = Carbon::parse($data['valid_until']);
+            $baseExpiry = $oldExpiry->isFuture() ? $oldExpiry : now();
+            $newExpiry = $data['duration'] === 'custom'
+                ? Carbon::parse($data['valid_until'])
+                : $baseExpiry->copy()->addDays((int) $data['duration']);
+            if ($newExpiry->lessThanOrEqualTo($baseExpiry)) {
+                throw ValidationException::withMessages(['valid_until' => 'The new expiry must be later than the current expiry or today, whichever is later.']);
+            }
             if ($locked->grace_until !== null && $locked->grace_until->lessThanOrEqualTo($newExpiry)) {
                 $locked->grace_until = null;
                 if ($locked->status === LicenceStatus::Grace) {
@@ -135,6 +142,7 @@ class LicenceController extends Controller
             $this->audit($locked, 'licence.extended', $request, [
                 'from_valid_until' => $oldExpiry->toIso8601String(),
                 'to_valid_until' => $locked->valid_until->toIso8601String(),
+                'duration' => $data['duration'] === 'custom' ? 'custom' : (int) $data['duration'].' days',
                 'from_status' => $oldStatus->value,
                 'to_status' => $locked->status->value,
                 'reason' => $this->safeReason($data['reason']),
