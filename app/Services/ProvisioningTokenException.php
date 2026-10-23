@@ -8,6 +8,6 @@ class ProvisioningTokenException extends RuntimeException
 {
     public function __construct()
     {
-        parent::__construct('Provisioning token issuance is unavailable.');
+        parent::__construct('Asymmetric token signing is unavailable.');
     }
 }

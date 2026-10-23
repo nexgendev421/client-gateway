@@ -83,6 +83,14 @@ class LicenceAdministrationTest extends TestCase
             'metadata_json' => '{"api_token":"do-not-store"}',
         ])->assertSessionHasErrors('metadata_json');
 
+        $this->from(route('admin.licences.create'))->post(route('admin.licences.store'), [
+            'customer_id' => $customerWithoutLicence->id,
+            'plan' => 'Unsafe feature value',
+            'starts_at' => now()->format('Y-m-d H:i:s'),
+            'valid_until' => now()->addMonth()->format('Y-m-d H:i:s'),
+            'metadata_json' => '{"diagnostic":"Bearer sypd_'.str_repeat('x', 35).'"}',
+        ])->assertSessionHasErrors('metadata_json');
+
         $this->assertDatabaseCount('licences', 1);
     }
 

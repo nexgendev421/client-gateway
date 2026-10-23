@@ -1,20 +1,20 @@
-# SiyazPOS Router Build Roadmap
+﻿# SiyazPOS Router Build Roadmap
 
 This is the source of truth for the remaining structured build. Implement phases in order, inspect existing code before each phase, avoid duplicates, preserve existing behavior, test each phase, update `docs/BUILD-STATUS.md`, review changes, and commit only when the worktree/staging scope is safe. Do not deploy or push without explicit authorization.
 
 ## Completed
 
-- Phase 1 — Project foundation
-- Phase 2 — Core database/domain architecture
-- Phase 3 — Admin authentication
-- Phase 4 — Admin dashboard shell
-- Phase 5 — Customer management
-- Phase 6 — Store management
-- Phase 7 — Endpoint health checking
-- Phase 8 — Activation code system
+- Phase 1 â€” Project foundation
+- Phase 2 â€” Core database/domain architecture
+- Phase 3 â€” Admin authentication
+- Phase 4 â€” Admin dashboard shell
+- Phase 5 â€” Customer management
+- Phase 6 â€” Store management
+- Phase 7 â€” Endpoint health checking
+- Phase 8 â€” Activation code system
 
 ## Remaining phases
-## Phase 9 — PUBLIC DEVICE ACTIVATION API — COMPLETED
+## Phase 9 â€” PUBLIC DEVICE ACTIVATION API â€” COMPLETED
 ==================================================
 
 Implement:
@@ -68,7 +68,7 @@ Requirements:
 - meaningful tests
 
 ==================================================
-## Phase 10 — SIGNED PROVISIONING TOKENS — COMPLETED
+## Phase 10 â€” SIGNED PROVISIONING TOKENS â€” COMPLETED
 ==================================================
 
 Implement asymmetric signed provisioning tokens.
@@ -115,7 +115,7 @@ Tests:
 Do not implement the customer POS repository in this repo.
 
 ==================================================
-## Phase 11 — DEVICE MANAGEMENT — COMPLETED
+## Phase 11 â€” DEVICE MANAGEMENT â€” COMPLETED
 ==================================================
 
 Implement admin device management.
@@ -178,7 +178,7 @@ Audit all actions.
 Add tests.
 
 ==================================================
-## Phase 12 — DEVICE CREDENTIAL SYSTEM — COMPLETED
+## Phase 12 â€” DEVICE CREDENTIAL SYSTEM â€” COMPLETED
 ==================================================
 
 Implement secure long-lived device authentication.
@@ -206,7 +206,7 @@ Tests:
 - rotation
 
 ==================================================
-## Phase 13 — DEVICE HEARTBEAT + CONFIG API — COMPLETED
+## Phase 13 â€” DEVICE HEARTBEAT + CONFIG API â€” COMPLETED
 ==================================================
 
 Implement:
@@ -248,7 +248,7 @@ Rate limit.
 Add tests.
 
 ==================================================
-## Phase 14 — LICENSING FOUNDATION — COMPLETED
+## Phase 14 â€” LICENSING FOUNDATION â€” COMPLETED
 ==================================================
 
 Implement customer-level licensing.
@@ -304,7 +304,7 @@ No Stripe yet.
 Add tests.
 
 ==================================================
-## Phase 15 — SIGNED LICENCE TOKENS — IN PROGRESS
+## Phase 15 â€” SIGNED LICENCE TOKENS â€” COMPLETED
 ==================================================
 
 Use asymmetric signing infrastructure to implement signed licence documents.
@@ -331,7 +331,7 @@ Architecture:
 - customer POS caches latest valid signed licence
 - no router call on every sale
 - router outage does not immediately stop trading
-- refresh every 12–24 hours as appropriate
+- refresh every 12â€“24 hours as appropriate
 - licence remains offline-verifiable
 - document clock rollback considerations
 
@@ -342,9 +342,9 @@ Create:
 Document:
 
 ACTIVE
-→ PAST_DUE
-→ GRACE
-→ RESTRICTED
+â†’ PAST_DUE
+â†’ GRACE
+â†’ RESTRICTED
 
 Recommended behaviour:
 
@@ -368,7 +368,7 @@ Do not implement customer POS enforcement here.
 Add tests.
 
 ==================================================
-## Phase 16 — LICENCE REFRESH API — PENDING
+## Phase 16 â€” LICENCE REFRESH API â€” IN PROGRESS
 ==================================================
 
 Implement secure API for authorised customer/device context to retrieve latest signed licence.
@@ -385,7 +385,7 @@ Requirements:
 Add tests.
 
 ==================================================
-## Phase 17 — LICENCE LIMIT ENFORCEMENT — PENDING
+## Phase 17 â€” LICENCE LIMIT ENFORCEMENT â€” PENDING
 ==================================================
 
 Integrate limits with:
@@ -417,7 +417,7 @@ Tests:
 - existing over-limit customer
 
 ==================================================
-## Phase 18 — EMERGENCY LICENCE EXTENSIONS — PENDING
+## Phase 18 â€” EMERGENCY LICENCE EXTENSIONS â€” PENDING
 ==================================================
 
 Implement controlled temporary extension:
@@ -441,7 +441,7 @@ Signed licence must reflect effective extension/grace.
 Tests.
 
 ==================================================
-## Phase 19 — AUTOMATED HEALTH MONITORING — PENDING
+## Phase 19 â€” AUTOMATED HEALTH MONITORING â€” PENDING
 ==================================================
 
 Extend existing manual health checking to scheduled checks.
@@ -473,7 +473,7 @@ No external alerts yet.
 Add tests.
 
 ==================================================
-## Phase 20 — APP VERSION MANAGEMENT — PENDING
+## Phase 20 â€” APP VERSION MANAGEMENT â€” PENDING
 ==================================================
 
 Implement Windows/Android client version management.
@@ -495,7 +495,7 @@ Do not build client updater.
 Add tests.
 
 ==================================================
-## Phase 21 — ADMIN USERS + ROLES — PENDING
+## Phase 21 â€” ADMIN USERS + ROLES â€” PENDING
 ==================================================
 
 Implement complete admin management.
@@ -533,7 +533,7 @@ Audit sensitive actions.
 Authorization tests.
 
 ==================================================
-## Phase 22 — ADMIN MFA — PENDING
+## Phase 22 â€” ADMIN MFA â€” PENDING
 ==================================================
 
 Implement TOTP MFA.
@@ -557,7 +557,7 @@ Document recovery.
 Tests.
 
 ==================================================
-## Phase 23 — AUDIT SYSTEM REVIEW — PENDING
+## Phase 23 â€” AUDIT SYSTEM REVIEW â€” PENDING
 ==================================================
 
 Ensure consistent audit logging.
@@ -620,7 +620,7 @@ Build searchable/filterable Audit Logs UI.
 Tests.
 
 ==================================================
-## Phase 24 — CENTRAL SETTINGS — PENDING
+## Phase 24 â€” CENTRAL SETTINGS â€” PENDING
 ==================================================
 
 Implement safe non-secret settings:
@@ -644,7 +644,7 @@ Validate and audit.
 Tests.
 
 ==================================================
-## Phase 25 — DEVICE ACTIVATION UI — PENDING
+## Phase 25 â€” DEVICE ACTIVATION UI â€” PENDING
 ==================================================
 
 Build minimal first-run activation UI suitable for:
@@ -692,7 +692,7 @@ Touch-friendly and simple.
 First-time setup only.
 
 ==================================================
-## Phase 26 — SECURITY HARDENING — PENDING
+## Phase 26 â€” SECURITY HARDENING â€” PENDING
 ==================================================
 
 Perform dedicated security review.
@@ -747,7 +747,7 @@ Include:
 No actual secrets.
 
 ==================================================
-## Phase 27 — UI POLISH — PENDING
+## Phase 27 â€” UI POLISH â€” PENDING
 ==================================================
 
 Polish admin UI only.
@@ -798,7 +798,7 @@ Avoid clutter.
 Run tests.
 
 ==================================================
-## Phase 28 — FULL TEST PASS — PENDING
+## Phase 28 â€” FULL TEST PASS â€” PENDING
 ==================================================
 
 Perform comprehensive production-readiness testing.
@@ -840,7 +840,7 @@ Record:
 Update BUILD-STATUS.
 
 ==================================================
-## Phase 29 — PRODUCTION CONFIGURATION — PENDING
+## Phase 29 â€” PRODUCTION CONFIGURATION â€” PENDING
 ==================================================
 
 Prepare production configuration.
@@ -871,7 +871,7 @@ Create:
 `docs/PRODUCTION-CONFIGURATION.md`
 
 ==================================================
-## Phase 30 — VPS DEPLOYMENT GUIDE — PENDING
+## Phase 30 â€” VPS DEPLOYMENT GUIDE â€” PENDING
 ==================================================
 
 Create:
@@ -922,7 +922,7 @@ Document:
 No real credentials.
 
 ==================================================
-## Phase 31 — SAFE DEPLOYMENT SCRIPT — PENDING
+## Phase 31 â€” SAFE DEPLOYMENT SCRIPT â€” PENDING
 ==================================================
 
 Create safe deployment script.
@@ -954,7 +954,7 @@ Document rollback.
 Do not deploy production.
 
 ==================================================
-## Phase 32 — BACKUP + RESTORE — PENDING
+## Phase 32 â€” BACKUP + RESTORE â€” PENDING
 ==================================================
 
 Create:
@@ -976,7 +976,7 @@ Cover:
 Avoid assuming paid providers unless needed.
 
 ==================================================
-## Phase 33 — FINAL ARCHITECTURE REVIEW — PENDING
+## Phase 33 â€” FINAL ARCHITECTURE REVIEW â€” PENDING
 ==================================================
 
 Perform final review.

@@ -56,7 +56,7 @@ class LicenceRequest extends FormRequest
                 $decoded = json_decode($raw, true);
                 if (! is_array($decoded)) {
                     $validator->errors()->add('metadata_json', 'Features must be a JSON object or array.');
-                } elseif ($this->containsSensitiveKey($decoded)) {
+                } elseif ($this->containsSensitiveKey($decoded) || $this->containsSensitiveValue($decoded)) {
                     $validator->errors()->add('metadata_json', 'Features cannot contain credentials, secrets, or personal access data.');
                 }
             }
@@ -70,6 +70,20 @@ class LicenceRequest extends FormRequest
                 return true;
             }
             if (is_array($value) && $this->containsSensitiveKey($value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function containsSensitiveValue(array $values): bool
+    {
+        foreach ($values as $value) {
+            if (is_array($value) && $this->containsSensitiveValue($value)) {
+                return true;
+            }
+            if (is_string($value) && preg_match('/Bearer\s+\S+|sypd_[A-Za-z0-9_-]{24,}|\b[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b|\b\d{4}-?\d{4}\b/i', $value) === 1) {
                 return true;
             }
         }
