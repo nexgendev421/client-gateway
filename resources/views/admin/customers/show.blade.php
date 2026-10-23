@@ -109,7 +109,7 @@
                 @else
                     <div class="overflow-x-auto"><table class="w-full min-w-[650px] text-left text-sm"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="px-5 py-3">Device</th><th class="px-4 py-3">Store</th><th class="px-4 py-3">Platform</th><th class="px-4 py-3">Status</th><th class="px-5 py-3">Last seen</th></tr></thead><tbody class="divide-y divide-slate-100">
                         @foreach ($devices as $device)
-                            <tr><td class="px-5 py-3 font-medium">{{ $device->name }}</td><td class="px-4 py-3 text-slate-600">{{ $device->store->name }}</td><td class="px-4 py-3 capitalize">{{ $device->platform->value }}</td><td class="px-4 py-3 capitalize">{{ $device->status->value }}</td><td class="px-5 py-3 text-xs text-slate-500">{{ $device->last_seen_at?->format('j M Y, H:i') ?? 'Never' }}</td></tr>
+                            <tr><td class="px-5 py-3 font-medium"><a href="{{ route('admin.devices.show', $device) }}" class="text-blue-700 hover:text-blue-900">{{ $device->name }}</a></td><td class="px-4 py-3 text-slate-600">{{ $device->store->name }}</td><td class="px-4 py-3 capitalize">{{ $device->platform->value }}</td><td class="px-4 py-3 capitalize">{{ $device->status->value }}</td><td class="px-5 py-3 text-xs text-slate-500">{{ $device->last_seen_at?->format('j M Y, H:i') ?? 'Never' }}</td></tr>
                         @endforeach
                     </tbody></table></div>
                     @if ($devices->hasPages())<div class="border-t border-slate-200 px-5 py-3">{{ $devices->links() }}</div>@endif

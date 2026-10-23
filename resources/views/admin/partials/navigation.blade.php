@@ -3,7 +3,7 @@
         ['label' => 'Dashboard', 'section' => 'dashboard', 'url' => route('dashboard')],
         ['label' => 'Customers', 'section' => 'customers', 'url' => route('admin.customers.index')],
         ['label' => 'Stores', 'section' => 'stores', 'url' => route('admin.stores.index')],
-        ['label' => 'Devices', 'section' => 'devices', 'url' => route('admin.section', ['section' => 'devices'])],
+        ['label' => 'Devices', 'section' => 'devices', 'url' => route('admin.devices.index')],
         ['label' => 'Activation Codes', 'section' => 'activation-codes', 'url' => route('admin.activation-codes.index')],
         ['label' => 'Licences', 'section' => 'licences', 'url' => route('admin.section', ['section' => 'licences'])],
         ['label' => 'System Health', 'section' => 'system-health', 'url' => route('admin.system-health.index')],

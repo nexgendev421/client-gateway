@@ -8,7 +8,6 @@ use Illuminate\View\View;
 class AdminSectionController extends Controller
 {
     private const SECTIONS = [
-        'devices' => 'Devices',
         'activation-codes' => 'Activation Codes',
         'licences' => 'Licences',
         'audit-logs' => 'Audit Logs',

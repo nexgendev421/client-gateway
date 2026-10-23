@@ -1,20 +1,21 @@
 ﻿# Build Status
 
-Current phase: 11 - Device Management
+Current phase: 12 - Device Credential System
 
 ## Completed
 
 - Phases 1-8: Foundation, domain schema, admin authentication, dashboard, customer/store administration, endpoint health checks, and activation-code administration.
 - Phase 9: Public device activation API.
 - Phase 10: Signed provisioning token issuer, verifier contract, and key operations documentation.
+- Phase 11: Device directory and lifecycle management.
 
 ## In Progress
 
-- Phase 11 - Device Management (next implementation phase).
+- Phase 12 - Device Credential System.
 
 ## Pending
 
-- Phases 12-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 13-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -37,9 +38,18 @@ Current phase: 11 - Device Management
 
 - Date: 2026-10-23.
 - Implementation: Added a reusable RS256 verifier selecting public keys by `kid`, validating the signature, issuer, audience, purpose, identity, and time claims, with support for multiple trusted keys during rotation. Added [DEVICE-PROVISIONING.md](DEVICE-PROVISIONING.md) covering the contract, key handling/rotation, and replay prevention responsibilities.
-- Verification: 5 focused verifier tests passed, 22 assertions. Full suite and formatting checks pending.
-- Commit: Pending.
+- Verification: 5 focused verifier tests passed, 22 assertions; full suite passed with 57 tests and 349 assertions; SQLite `migrate:fresh`, targeted Pint, and `git diff --check` passed.
+- Commit: `a133407` - `Add provisioning token verification and rotation docs`.
 - Scope note: Customer POS verification and atomic `jti` replay storage belong in the separate customer POS repository. Production requires operator-provisioned keys.
+
+### Phase 11 - Device Management
+
+- Date: 2026-10-23.
+- Implementation: Added the authenticated, role-aware device directory and detail page; search and customer/store/platform/status/recent-seen filters; rename, same-customer store move, disable, reactivate, and permanent revoke actions; per-device activity; and audit entries. State changes use row locks, revoked devices cannot be edited or moved, and Store/Customer device lists link to the detail page.
+- Verification: 6 focused feature tests passed, 49 assertions; full suite passed with 63 tests and 398 assertions; targeted Pint, route-list inspection, and `git diff --check` passed.
+- Commit: Pending.
+- Known risks: “Offline” uses a temporary 24-hour last-seen threshold until Phase 13 heartbeat and Phase 24 settings define cadence. Credential authentication/revocation enforcement is Phase 12.
+- Next: Implement Phase 12 device credentials.
 
 ### Build harness and repository guidance
 

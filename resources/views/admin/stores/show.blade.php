@@ -88,7 +88,7 @@
             <p class="px-5 py-9 text-center text-sm text-slate-500">No devices are registered at this store.</p>
         @else
             <div class="overflow-x-auto"><table class="w-full min-w-[620px] text-left text-sm"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="px-5 py-3">Device</th><th class="px-4 py-3">Platform</th><th class="px-4 py-3">Status</th><th class="px-5 py-3">Last seen</th></tr></thead><tbody class="divide-y divide-slate-100">
-                @foreach ($devices as $device)<tr><td class="px-5 py-3 font-medium">{{ $device->name }}</td><td class="px-4 py-3 capitalize">{{ $device->platform->value }}</td><td class="px-4 py-3 capitalize">{{ $device->status->value }}</td><td class="px-5 py-3 text-xs text-slate-500">{{ $device->last_seen_at?->format('j M Y, H:i') ?? 'Never' }}</td></tr>@endforeach
+                @foreach ($devices as $device)<tr><td class="px-5 py-3 font-medium"><a href="{{ route('admin.devices.show', $device) }}" class="text-blue-700 hover:text-blue-900">{{ $device->name }}</a></td><td class="px-4 py-3 capitalize">{{ $device->platform->value }}</td><td class="px-4 py-3 capitalize">{{ $device->status->value }}</td><td class="px-5 py-3 text-xs text-slate-500">{{ $device->last_seen_at?->format('j M Y, H:i') ?? 'Never' }}</td></tr>@endforeach
             </tbody></table></div>
         @endif
     </section>

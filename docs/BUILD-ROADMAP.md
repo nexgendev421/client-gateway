@@ -115,7 +115,7 @@ Tests:
 Do not implement the customer POS repository in this repo.
 
 ==================================================
-## Phase 11 — DEVICE MANAGEMENT — PENDING
+## Phase 11 — DEVICE MANAGEMENT — COMPLETED
 ==================================================
 
 Implement admin device management.
@@ -178,7 +178,7 @@ Audit all actions.
 Add tests.
 
 ==================================================
-## Phase 12 — DEVICE CREDENTIAL SYSTEM — PENDING
+## Phase 12 — DEVICE CREDENTIAL SYSTEM — IN PROGRESS
 ==================================================
 
 Implement secure long-lived device authentication.
