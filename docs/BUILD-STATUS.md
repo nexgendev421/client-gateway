@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 26 - Security Hardening
+Current phase: 27 - UI Polish
 
 ## Completed
 
@@ -22,10 +22,11 @@ Current phase: 26 - Security Hardening
 - Phase 23: Consistent sign-in/security audit events, searchable and filterable super-admin audit log, recursive secret/token redaction, and before/after store endpoint host snapshots.
 - Phase 24: Central non-secret settings administration for activation defaults, health frequency/retention, heartbeat expectations, licence grace, support contact and maintenance notices; existing app-version management remains the version editor.
 - Phase 25: First-run touch-friendly activation page for Windows/Android WebViews, using the existing activation API and an in-memory native provisioning handoff.
+- Phase 26: Added browser security headers, production-only HSTS, safer production session defaults, a quieter `.env.example`, and production security/key rotation guidance. Reviewed existing authentication/MFA, authorization, hashed activation/device credentials, signed-token replay protection, SSRF-safe health checks, rate limits, audit redaction, and safe error handling.
 
 ## In Progress
 
-- Phase 26 - Security Hardening (in progress).
+- Phase 27 - UI Polish (in progress).
 
 ## Pending
 
@@ -181,3 +182,11 @@ Current phase: 26 - Security Hardening
 - Date: 2026-10-23.
 - Changes: Added root `AGENTS.md`, `BUILD-ROADMAP.md`, and this status file; updated `ARCHITECTURE.md` with Gateway/customer VPS boundaries.
 - Commit: `4aa2760` - `Add autonomous build roadmap and repository guidance`.
+
+### Phase 26 - Security Hardening
+
+- Date: 2026-10-23.
+- Implementation: Added browser security headers globally, with HSTS limited to secure production requests. Production defaults enable encrypted sessions and secure cookies unless explicitly overridden. Changed `.env.example` to default debug off and info logging. Added [SECURITY.md](SECURITY.md) with production assumptions, secret handling, signing-key rotation, existing controls and release checklist.
+- Review: Existing admin authentication/MFA, role checks, activation/device credential hashing, signed token expiry and single-use replay protection, SSRF-safe pinned health checks, rate limits, redacted audit logs and generic exception handling were inspected. No additional concrete defect was found in the reviewed paths. Strict CSP remains a future improvement because the activation page currently uses inline script handoff.
+- Verification: Security header tests passed (2 tests, 14 assertions); full suite passed with 134 tests and 884 assertions. Changed-file Pint and `git diff --check` passed.
+- Next: Implement Phase 27 admin UI polish.
