@@ -150,7 +150,7 @@ Current phase: 23 - Audit System Review
 - Date: 2026-10-23.
 - Implementation: Added encrypted TOTP secrets, local QR provisioning, authenticator setup/confirmation, MFA login challenge with TOTP replay prevention, ten individually hashed single-use recovery codes, secure password-plus-MFA reset/disable workflows, per-user/IP attempt throttling, and mandatory enrollment for super admins. MFA screens containing secrets or recovery codes are marked no-store. Added [ADMIN-MFA.md](ADMIN-MFA.md) recovery and key-management instructions.
 - Verification: 9 focused MFA tests passed, 60 assertions; full suite passed with 116 tests and 783 assertions. `php artisan route:list --path=mfa`, changed-file Pint, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `edaac5a` - `Implement administrator MFA`.
 - Next: Implement Phase 23 audit system review.
 ### Build harness and repository guidance
 
