@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Keep ACME HTTP-01 challenge files reachable for certificate issuance.
+    RewriteRule ^\.well-known(?:/|$) - [L]
+
+    # The repository may sit at the hosting document root. Deny direct access
+    # to application source, dependencies, secrets, and build configuration.
+    RewriteRule ^(?:\.|app|bootstrap|config|database|docs|lang|resources|routes|scripts|storage|tests|updates|vendor)(?:/|$) - [F,L,NC]
+    RewriteRule ^(?:artisan|composer\.(?:json|lock|phar)|phpunit\.xml|vite\.config\.js|package(?:-lock)?\.json|README\.md)$ - [F,L,NC]
+
+    # Serve public assets and pass all other URLs to Laravel's public front
+    # controller. The public prefix exception prevents an internal rewrite loop.
+    RewriteRule ^public(?:/|$) - [L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>

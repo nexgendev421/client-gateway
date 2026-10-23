@@ -9,7 +9,17 @@ This guide deploys the central Router service to `siyazposrouter.top` on an Ubun
 3. Create an empty dedicated MariaDB database and user in HestiaCP. Grant that user access only to the Router database. Keep the database local/private; do not expose port 3306 publicly.
 4. Create a dedicated SSH deploy key for this VPS and add only its read access to the Router GitHub repository. Verify host key fingerprints. Do not use a personal SSH key or a broad GitHub token on the server.
 
-## 2. Clone into a private release directory
+## 2. Choose the deployment layout
+
+The safest supported layout keeps the Laravel project outside the web root and points the website at its `public/` directory. That is the recommended production setup below.
+
+For a simpler shared-hosting upload workflow, the complete project can instead be uploaded or extracted directly into the domain's `public_html`, then installed at `/install`. The repository root `.htaccess` forwards requests into `public/` and blocks direct requests for Laravel source, dependencies, configuration and secrets. This shortcut is supported only when Apache processes every request and permits `.htaccess` overrides (`mod_rewrite` and `AllowOverride`); confirm this with the hosting provider. `.htaccess` does not configure Nginx. If Nginx can serve files directly, a web-server deny rule must block dotfiles and project paths such as `/app`, `/vendor`, `/storage`, `/bootstrap`, `/config`, `/database`, `/routes`, `/resources`, `/tests`, `/docs`, and root files like `/composer.json` before using this layout. Verify these paths return 403/404 and never file contents. If you cannot verify that, use the safer layout below.
+
+To prepare a single uploadable ZIP from a Windows development machine, commit the reviewed release and run `powershell -ExecutionPolicy Bypass -File .\scripts\package-release.ps1`. It builds production PHP dependencies and frontend assets, then writes `dist/siyazpos-router-<version>.zip`. For the Apache-compatible upload layout, extract it directly into the domain's `public_html`; otherwise extract it into a private app directory and point the domain at its `public/` folder. The ZIP contains no `.env`, Git metadata, local keys or logs. The script requires Git, Composer, npm and tar locally; 7-Zip is optional and speeds up ZIP creation. For a tagged release, the ZIP name uses the tag; otherwise it uses the current commit identifier. Do not package uncommitted changes.
+
+Even in the upload workflow, create the domain, enable HTTPS, choose a supported PHP version, create an empty database/user, and grant the PHP account write access to `storage/` and `bootstrap/cache/` before opening `/install`. The wizard configures the application and database; it cannot create the hosting account, web-server virtual host, TLS certificate, or database itself.
+
+## 3. Clone into a private release directory
 
 Connect as the Hestia domain owner, not root. Use a private directory outside the public web root, for example:
 
@@ -20,15 +30,15 @@ git clone --branch main --single-branch git@github.com:YOUR_ORG/YOUR_ROUTER_REPO
 cd router
 ```
 
-Use the actual repository URL and approved release branch. Never clone into `public_html`. Keep `.git`, source, `vendor`, `.env`, storage, backups, and signing keys outside the web document root.
+Use the actual repository URL and approved release branch. In this recommended layout, keep `.git`, source, `vendor`, `.env`, storage, backups, and signing keys outside the web document root.
 
-## 3. Point the website only at Laravel `public/`
+## 4. Point the website only at Laravel `public/`
 
-Laravel's document root must be the repository's `public` directory. Configure the Hestia Nginx/Apache web template so requests for the domain are served from `/home/WEB_USER/apps/router/public` (using the actual Hestia user and path). Hestia layouts can differ: verify the generated virtual host configuration and ensure its public root resolves to that directory. Do not copy the project root into `public_html` or point the domain at the repository root. Do not make a symlink that allows browsing source or `.env`.
+Laravel's document root must be the repository's `public` directory. Configure the Hestia Nginx/Apache web template so requests for the domain are served from `/home/WEB_USER/apps/router/public` (using the actual Hestia user and path). Hestia layouts can differ: verify the generated virtual host configuration and ensure its public root resolves to that directory. Do not point the domain directly at the repository root in this layout. Do not make a symlink that allows browsing source or `.env`.
 
 After applying the web template, verify that `/` serves the Laravel app and direct requests for `/.env`, `/vendor/`, `/.git/`, `/storage/logs/`, and `/bootstrap/` do not reveal files. Hestia's PHP-FPM user needs write access to `storage/` and `bootstrap/cache/` only; use the actual service/group model on the host rather than `chmod -R 777`.
 
-## 4. Install dependencies and configure secrets
+## 5. Install dependencies and configure secrets
 
 Install PHP dependencies without development packages:
 
@@ -42,7 +52,7 @@ The installer creates a protected `.env`, a unique `APP_KEY`, a per-install RSA 
 
 Keep `.env` and the generated private key outside the public document root and readable only by the PHP service account. Back them up separately in encrypted storage. Never commit `.env` or print it into deployment logs. See [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md) for proxy, session, signing key, scheduler, and operations settings.
 
-## 5. Initialise and verify
+## 6. Initialise and verify
 
 After the installer reports success, verify the application from the private directory:
 
@@ -61,14 +71,14 @@ The storage link is only needed for assets intentionally served from Laravel's p
 
 Run `php artisan route:list`, `php artisan schedule:list`, and the test suite in CI before a release. Ensure `schedule:list` includes the endpoint health check and history pruning tasks. Make a real HTTPS request and confirm that secure cookies, production error pages, and HSTS behave as expected.
 
-## 6. TLS, Cloudflare and network controls
+## 7. TLS, Cloudflare and network controls
 
 - Use Hestia/Let's Encrypt or another managed certificate, renew automatically, and test renewal before launch.
 - If using Cloudflare, choose Full (strict) TLS. Keep the origin certificate valid and configure the origin firewall for Cloudflare address ranges if possible. Do not treat Cloudflare as a substitute for application HTTPS or host firewall rules.
 - Configure Laravel trusted proxies only for the known reverse proxy/CDN addresses. Do not accept forwarded host/protocol/IP headers from arbitrary clients. Validate the perceived request scheme and client IP at the origin.
 - Allow inbound HTTP/HTTPS only as required, SSH only from operator networks, and no public database/cache ports. Restrict outbound traffic where practical while allowing DNS, HTTPS health checks to approved public POS endpoints, package/security updates, and required mail/monitoring.
 
-## 7. Scheduler, queue and monitoring
+## 8. Scheduler, queue and monitoring
 
 Add one cron entry for the Hestia web user to run Laravel Scheduler every minute:
 
@@ -80,7 +90,7 @@ Check command path, PHP binary and permissions for the selected host. The curren
 
 Monitor HTTPS availability, Laravel/PHP-FPM and web server errors, disk space, database capacity, cron execution, backup completion, TLS expiry, and repeated authentication/activation failures. Restrict logs and alerts. Do not include activation codes, device tokens, passwords, MFA data or private-key contents in alert payloads.
 
-## 8. Safe application updates
+## 9. Safe application updates
 
 The repository includes `scripts/deploy.sh` for a deliberately narrow fast-forward release flow. Run it from its checked-out repository using the Hestia web user after a backup and a reviewed release has been merged to `origin/main`:
 
@@ -106,7 +116,7 @@ For rollback, point the web root back to the previous known-good release and reb
 
 ## First-launch checklist
 
-- [ ] Web document root is the Laravel `public/` directory only.
+- [ ] Web document root is the Laravel `public/` directory, or Apache processes the root rewrite and requests for every project/source path are verified as blocked.
 - [ ] `.env`, source, logs, backups and signing private keys are not web accessible.
 - [ ] Production HTTPS, `APP_DEBUG=false`, encrypted/secure sessions and HSTS are verified.
 - [ ] Database and deploy SSH access are least privilege and network restricted.
