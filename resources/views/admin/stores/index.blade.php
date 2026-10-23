@@ -26,11 +26,10 @@
                         <td class="whitespace-nowrap px-4 py-3.5 tabular-nums text-slate-700">{{ $store->devices_count }} / {{ $store->max_devices }}</td>
                         <td class="px-4 py-3.5">
                             @if ($store->latestHealthCheck)
-                                @php($healthClass = match($store->latestHealthCheck->status->value) { 'online' => 'text-emerald-700', default => 'text-rose-700' })
-                                <span class="text-xs font-medium {{ $healthClass }}">{{ str($store->latestHealthCheck->status->value)->headline() }}</span>
+                                <x-status-badge :status="$store->latestHealthCheck->status" />
                             @else<span class="text-xs text-slate-400">Not checked</span>@endif
                         </td>
-                        <td class="px-4 py-3.5"><span class="rounded-full px-2.5 py-1 text-xs font-medium {{ $store->status->value === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800' }}">{{ str($store->status->value)->headline() }}</span></td>
+                        <td class="px-4 py-3.5"><x-status-badge :status="$store->status" /></td>
                         <td class="whitespace-nowrap px-5 py-3.5 text-xs text-slate-500">{{ $store->created_at->format('j M Y') }}</td>
                     </tr>
                 @empty

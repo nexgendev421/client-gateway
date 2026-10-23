@@ -26,11 +26,11 @@ Current phase: 27 - UI Polish
 
 ## In Progress
 
-- Phase 27 - UI Polish (in progress).
+- Phase 28 - Full Test Pass (in progress).
 
 ## Pending
 
-- Phases 27-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 28-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -189,4 +189,12 @@ Current phase: 27 - UI Polish
 - Implementation: Added browser security headers globally, with HSTS limited to secure production requests. Production defaults enable encrypted sessions and secure cookies unless explicitly overridden. Changed `.env.example` to default debug off and info logging. Added [SECURITY.md](SECURITY.md) with production assumptions, secret handling, signing-key rotation, existing controls and release checklist.
 - Review: Existing admin authentication/MFA, role checks, activation/device credential hashing, signed token expiry and single-use replay protection, SSRF-safe pinned health checks, rate limits, redacted audit logs and generic exception handling were inspected. No additional concrete defect was found in the reviewed paths. Strict CSP remains a future improvement because the activation page currently uses inline script handoff.
 - Verification: Security header tests passed (2 tests, 14 assertions); full suite passed with 134 tests and 884 assertions. Changed-file Pint and `git diff --check` passed.
+- Commit: `c0c674c` - `Harden production security defaults`.
 - Next: Implement Phase 27 admin UI polish.
+
+### Phase 27 - UI Polish
+
+- Date: 2026-10-23.
+- Implementation: Added a shared status badge with consistent distinct colours for active/online, grace/past due, suspended/restricted/offline, revoked/expired, and used states. Applied it across customer, store, device, activation-code, and licence lists. Improved mobile navigation snapping and keyboard focus visibility.
+- Verification: Full suite passed with 134 tests and 884 assertions. `npm run build`, Pint, and `git diff --check` passed.
+- Next: Perform Phase 28 full test pass.

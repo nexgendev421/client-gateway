@@ -692,7 +692,7 @@ Touch-friendly and simple.
 First-time setup only.
 
 ==================================================
-## Phase 26 â€” SECURITY HARDENING â€” PENDING
+## Phase 26 — SECURITY HARDENING — COMPLETED
 ==================================================
 
 Perform dedicated security review.
@@ -747,7 +747,7 @@ Include:
 No actual secrets.
 
 ==================================================
-## Phase 27 â€” UI POLISH â€” PENDING
+## Phase 27 — UI POLISH — COMPLETED
 ==================================================
 
 Polish admin UI only.

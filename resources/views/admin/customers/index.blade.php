@@ -52,14 +52,13 @@
                             <td class="px-4 py-3.5 text-right tabular-nums text-slate-700">{{ number_format($customer->devices_count) }}</td>
                             <td class="px-4 py-3.5">
                                 @if ($customer->licence)
-                                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium capitalize text-slate-700">{{ str_replace('_', ' ', $customer->licence->status->value) }}</span>
+                                    <x-status-badge :status="$customer->licence->status" />
                                 @else
                                     <span class="text-slate-400">No licence</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3.5">
-                                @php($statusClass = match($customer->status->value) { 'active' => 'bg-emerald-50 text-emerald-700', 'suspended' => 'bg-amber-50 text-amber-800', default => 'bg-slate-100 text-slate-600' })
-                                <span class="rounded-full px-2.5 py-1 text-xs font-medium {{ $statusClass }}">{{ str($customer->status->value)->headline() }}</span>
+                                <x-status-badge :status="$customer->status" />
                             </td>
                             <td class="whitespace-nowrap px-4 py-3.5 text-xs text-slate-500">{{ $customer->created_at->format('j M Y') }}</td>
                             <td class="px-5 py-3.5 text-right"><a href="{{ route('admin.customers.show', $customer) }}" class="text-xs font-semibold text-blue-700 hover:text-blue-900">View</a></td>

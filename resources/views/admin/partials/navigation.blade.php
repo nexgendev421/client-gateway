@@ -14,12 +14,12 @@
     $currentSection = $activeNav ?? 'dashboard';
 @endphp
 
-<nav aria-label="Main navigation" class="{{ $compact ? 'flex gap-1 overflow-x-auto pb-1' : 'space-y-1' }}">
+<nav aria-label="Main navigation" class="{{ $compact ? 'flex snap-x snap-mandatory gap-1 overflow-x-auto pb-1 [scrollbar-width:thin]' : 'space-y-1' }}">
     @foreach ($links as $link)
         @if (! isset($link['ability']) || auth()->user()?->can($link['ability']))
         @php($isActive = $currentSection === $link['section'])
         <a href="{{ $link['url'] }}" @if ($isActive) aria-current="page" @endif
-            class="{{ $compact ? 'shrink-0 whitespace-nowrap px-3 py-2 text-xs' : 'w-full px-3 py-2.5 text-[13px]' }} flex items-center rounded-lg font-medium {{ $isActive ? 'bg-blue-50 text-blue-800' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+            class="{{ $compact ? 'shrink-0 snap-start whitespace-nowrap px-3 py-2 text-xs' : 'w-full px-3 py-2.5 text-[13px]' }} flex items-center rounded-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 {{ $isActive ? 'bg-blue-50 text-blue-800' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
             @if ($isActive)<span class="mr-2 h-1.5 w-1.5 rounded-full bg-cyan-500"></span>@endif
             {{ $link['label'] }}
         </a>
