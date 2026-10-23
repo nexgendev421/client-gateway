@@ -158,7 +158,7 @@ Current phase: 24 - Central Settings
 - Date: 2026-10-23.
 - Implementation: Added success, failure, and logout audit events for administrator sign-ins; extended audit metadata redaction to nested keys and sensitive patterns in values; store edits retain safe before/after field snapshots and endpoint hosts only. Replaced the Audit Logs placeholder with a super-admin-only search, actor, action, resource, and date filtered paginated event list.
 - Verification: Audit administration tests passed (4 tests, 21 assertions); Store administration tests passed (17 tests, 125 assertions); full suite passed with 120 tests and 806 assertions. Changed-file Pint, audit route listing, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `2de270c` - `Complete audit log administration`.
 - Next: Implement Phase 24 central settings.
 ### Build harness and repository guidance
 
