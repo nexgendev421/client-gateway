@@ -174,7 +174,7 @@ Current phase: 26 - Security Hardening
 - Date: 2026-10-23.
 - Implementation: Added `/activate` as a mobile/WebView first-run screen that calls the existing activation API, validates optional wrapper metadata, displays the device identifier and progress, and presents safe activation/rate-limit/service/network errors. Successful provisioning data is sent in memory over the WebView2 or Android bridge (with a browser event fallback); tokens and activation codes are never placed in URLs, displayed, logged, or persisted by the page. Added [DEVICE-ACTIVATION-UI.md](DEVICE-ACTIVATION-UI.md) with wrapper query parameters and native handoff requirements.
 - Verification: 3 activation UI tests passed, 20 assertions; full suite passed with 132 tests and 870 assertions. `npm run build`, changed-file Pint, activation route listing, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `c593f9d` - `Add device activation WebView screen`.
 - Next: Implement Phase 26 security hardening.
 ### Build harness and repository guidance
 
