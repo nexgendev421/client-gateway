@@ -12,6 +12,7 @@ use App\Models\Device;
 use App\Models\HealthCheck;
 use App\Models\Licence;
 use App\Models\Store;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -57,6 +58,7 @@ class AdminDashboardTest extends TestCase
                 'Customers' => 2,
                 'Active stores' => 1,
                 'Registered devices' => 1,
+                'Outdated devices' => 0,
                 'Devices seen today' => 1,
                 'Active licences' => 1,
                 'Past-due licences' => 1,
@@ -68,5 +70,28 @@ class AdminDashboardTest extends TestCase
             ->assertSee('Market Road')
             ->assertSee('Device Registered')
             ->assertSee('1 offline');
+    }
+
+    public function test_dashboard_highlights_active_devices_below_the_platform_latest_version(): void
+    {
+        $store = Store::factory()->create();
+        SystemSetting::query()->create(['key' => 'app_versions', 'value' => [
+            'windows' => ['latest_version' => '2.0.0'],
+            'android' => ['latest_version' => '5.0.0'],
+        ]]);
+        Device::factory()->for($store)->create(['name' => 'Old Windows Till', 'platform' => DevicePlatform::Windows, 'app_version' => '1.9.9']);
+        Device::factory()->for($store)->create(['name' => 'Current Android Till', 'platform' => DevicePlatform::Android, 'app_version' => '5.0.0']);
+        Device::factory()->for($store)->create(['name' => 'Unknown Version Till', 'platform' => DevicePlatform::Android, 'app_version' => null]);
+        Device::factory()->for($store)->create(['name' => 'Disabled Old Till', 'platform' => DevicePlatform::Windows, 'app_version' => '1.0.0', 'status' => 'disabled']);
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('2 outdated')
+            ->assertSee('Old Windows Till')
+            ->assertSee('1.9.9 → 2.0.0')
+            ->assertSee('Unknown Version Till')
+            ->assertViewHas('outdatedDeviceCount', 2)
+            ->assertViewHas('outdatedDevices', fn ($devices): bool => $devices->pluck('name')->all() === ['Old Windows Till', 'Unknown Version Till']);
     }
 }

@@ -473,7 +473,7 @@ No external alerts yet.
 Add tests.
 
 ==================================================
-## Phase 20 â€” APP VERSION MANAGEMENT â€” PENDING
+## Phase 20 â€” APP VERSION MANAGEMENT â€” COMPLETED
 ==================================================
 
 Implement Windows/Android client version management.

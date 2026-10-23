@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ActivationCodeController;
 use App\Http\Controllers\Admin\AdminSectionController;
+use App\Http\Controllers\Admin\AppVersionController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeviceController;
@@ -51,6 +52,8 @@ Route::middleware(['auth', EnsureAdminIsActive::class])->group(function (): void
     Route::post('/admin/stores/{store}/activation-codes', [ActivationCodeController::class, 'generate'])->whereNumber('store')->name('admin.stores.activation-codes.store');
     Route::get('/admin/stores/{store}', [StoreController::class, 'show'])->whereNumber('store')->name('admin.stores.show');
     Route::get('/admin/system-health', SystemHealthController::class)->name('admin.system-health.index');
+    Route::get('/admin/settings', [AppVersionController::class, 'edit'])->name('admin.settings.app-versions');
+    Route::put('/admin/settings/app-versions', [AppVersionController::class, 'update'])->name('admin.settings.app-versions.update');
     Route::get('/admin/devices', [DeviceController::class, 'index'])->name('admin.devices.index');
     Route::get('/admin/devices/{device}', [DeviceController::class, 'show'])->whereNumber('device')->name('admin.devices.show');
     Route::patch('/admin/devices/{device}/rename', [DeviceController::class, 'rename'])->whereNumber('device')->name('admin.devices.rename');

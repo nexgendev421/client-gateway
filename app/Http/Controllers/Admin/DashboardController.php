@@ -11,19 +11,23 @@ use App\Models\Customer;
 use App\Models\Device;
 use App\Models\Licence;
 use App\Models\Store;
+use App\Services\AppVersionSettings;
+use App\Services\OutdatedDeviceService;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(OutdatedDeviceService $outdatedDevices, AppVersionSettings $appVersions): View
     {
         $today = now()->startOfDay();
+        $outdated = $outdatedDevices->summary();
 
         return view('admin.dashboard', [
             'metrics' => [
                 ['label' => 'Customers', 'value' => Customer::count(), 'tone' => 'blue'],
                 ['label' => 'Active stores', 'value' => Store::where('status', StoreStatus::Active)->count(), 'tone' => 'cyan'],
                 ['label' => 'Registered devices', 'value' => Device::count(), 'tone' => 'slate'],
+                ['label' => 'Outdated devices', 'value' => $outdated['count'], 'tone' => 'amber'],
                 ['label' => 'Devices seen today', 'value' => Device::whereDate('last_seen_at', $today)->count(), 'tone' => 'cyan'],
                 ['label' => 'Active licences', 'value' => Licence::where('status', LicenceStatus::Active)->count(), 'tone' => 'blue'],
                 ['label' => 'Past-due licences', 'value' => Licence::where('status', LicenceStatus::PastDue)->count(), 'tone' => 'amber'],
@@ -46,6 +50,12 @@ class DashboardController extends Controller
                 ->orderBy('name')
                 ->limit(6)
                 ->get(),
+            'outdatedDevices' => $outdated['devices'],
+            'outdatedDeviceCount' => $outdated['count'],
+            'latestAppVersions' => [
+                'windows' => $appVersions->forPlatform('windows')['latest_version'],
+                'android' => $appVersions->forPlatform('android')['latest_version'],
+            ],
         ]);
     }
 }

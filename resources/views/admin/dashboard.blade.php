@@ -12,7 +12,7 @@
         <p class="text-xs text-slate-500">Updated {{ now()->format('j M Y, H:i') }}</p>
     </div>
 
-    <section aria-label="Router metrics" class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
+    <section aria-label="Router metrics" class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-8">
         @foreach ($metrics as $metric)
             @php
                 $accent = match ($metric['tone']) {
@@ -32,6 +32,15 @@
     </section>
 
     <section class="mt-6 grid gap-4 xl:grid-cols-2">
+        <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm xl:col-span-2">
+            <header class="flex items-center justify-between border-b border-slate-100 px-5 py-4"><div><h2 class="text-sm font-semibold text-slate-900">Devices needing an update</h2><p class="mt-0.5 text-xs text-slate-500">Active devices below the latest published version</p></div><div class="flex items-center gap-3"><span class="rounded-md {{ $outdatedDeviceCount === 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800' }} px-2 py-1 text-[11px] font-medium">{{ number_format($outdatedDeviceCount) }} outdated</span><a href="{{ route('admin.settings.app-versions') }}" class="text-xs font-semibold text-blue-700 hover:text-blue-900">Manage versions</a></div></header>
+            @forelse ($outdatedDevices as $device)
+                <div class="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-3 last:border-0"><div class="min-w-0"><a href="{{ route('admin.devices.show', $device) }}" class="truncate text-sm font-medium text-blue-700 hover:text-blue-900">{{ $device->name }}</a><p class="mt-0.5 truncate text-xs text-slate-500">{{ $device->store->customer->business_name }} · {{ $device->store->name }}</p></div><div class="shrink-0 text-right"><p class="text-xs font-medium capitalize text-slate-600">{{ $device->platform->value }}</p><p class="mt-0.5 text-[11px] text-slate-500">{{ $device->app_version ?: 'Version not reported' }} → {{ $latestAppVersions[$device->platform->value] }}</p></div></div>
+            @empty
+                <div class="px-5 py-7 text-center"><p class="text-sm font-medium text-slate-700">No outdated active devices</p><p class="mt-1 text-xs text-slate-500">Publish a latest version in Settings to monitor updates.</p></div>
+            @endforelse
+        </article>
+
         <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <header class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <div><h2 class="text-sm font-semibold text-slate-900">Recent device activations</h2><p class="mt-0.5 text-xs text-slate-500">Most recently registered devices</p></div>

@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 20 - App Version Management
+Current phase: 21 - Admin Users and Roles
 
 ## Completed
 
@@ -16,14 +16,15 @@ Current phase: 20 - App Version Management
 - Phase 17: Licence store/device limit enforcement and over-limit reporting.
 - Phase 18: Controlled temporary emergency licence extensions.
 - Phase 19: Scheduled SSRF-safe endpoint checks, per-store lock, and history pruning.
+- Phase 20: Windows/Android app version administration, device config details, and outdated-device dashboard reporting.
 
 ## In Progress
 
-- Phase 20 - App Version Management.
+- Phase 21 - Admin Users and Roles.
 
 ## Pending
 
-- Phases 21-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 22-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -121,8 +122,17 @@ Current phase: 20 - App Version Management
 - Date: 2026-10-23.
 - Implementation: Added a five-minute scheduled command to check active POS endpoints sequentially (bounded concurrency of one) using the existing SSRF-safe transport, per-store cache locks shared with manual checks, 3-second connection and 6-second overall timeouts, and safe error records. Added daily configurable history pruning that retains the latest record for each store. System Health now shows last success and the last successful POS/API versions alongside current status and response time.
 - Verification: 3 dedicated monitoring command tests passed, 15 assertions; full suite passed with 96 tests and 647 assertions; scheduler listing confirmed five-minute and daily tasks; changed-file Pint and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `c6dbf43` - `Schedule safe POS health checks`.
 - Next: Implement Phase 20 app version management.
+
+### Phase 20 - App Version Management
+
+- Date: 2026-10-23.
+- Existing behavior: Device config already exposed minimum and recommended version strings from legacy system settings.
+- Implementation: Added super-admin Windows/Android version settings for latest/minimum versions, HTTPS download URL, mandatory-update flag, and sanitized release notes. Preserved the legacy config fields and added latest/download/update/release-note fields. Dashboard counts and lists active devices with an unknown or older version. Admin changes are audited without copying release-note text or full download URLs. Added [APP-VERSIONS.md](APP-VERSIONS.md).
+- Verification: 11 focused tests passed, 81 assertions; full suite passed with 101 tests and 681 assertions; changed-file Pint, route listing, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 21 admin users and roles.
 
 ### Build harness and repository guidance
 

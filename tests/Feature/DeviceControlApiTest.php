@@ -82,12 +82,37 @@ class DeviceControlApiTest extends TestCase
             ->assertJsonPath('app_versions.platform', 'android')
             ->assertJsonPath('app_versions.minimum_supported', '1.4.0')
             ->assertJsonPath('app_versions.recommended', '1.7.2')
+            ->assertJsonPath('app_versions.latest_version', '1.7.2')
+            ->assertJsonPath('app_versions.mandatory_update', false)
             ->assertJsonPath('maintenance_notice', 'Scheduled maintenance tonight');
 
         $this->assertSame(['business_name', 'store_name', 'endpoint_url', 'device', 'licence', 'app_versions', 'maintenance_notice'], array_keys($response->json()));
         $this->assertArrayNotHasKey('id', $response->json('device'));
         $this->assertArrayNotHasKey('token', $response->json());
         $this->assertNotNull($license->fresh());
+    }
+
+    public function test_config_returns_safe_platform_update_details_from_admin_settings(): void
+    {
+        $device = Device::factory()->create(['platform' => 'windows']);
+        SystemSetting::query()->create(['key' => 'app_versions', 'value' => [
+            'windows' => [
+                'latest_version' => '2.0.0',
+                'minimum_supported_version' => '1.7.0',
+                'download_url' => 'https://downloads.example.com/router/windows',
+                'mandatory_update' => true,
+                'release_notes' => '<b>Security fixes</b>',
+            ],
+        ]]);
+        $credential = app(DeviceCredentialService::class)->issue($device);
+
+        $this->getJson(route('api.v1.device.config'), ['Authorization' => 'Bearer '.$credential['token']])
+            ->assertOk()
+            ->assertJsonPath('app_versions.latest_version', '2.0.0')
+            ->assertJsonPath('app_versions.minimum_supported', '1.7.0')
+            ->assertJsonPath('app_versions.download_url', 'https://downloads.example.com/router/windows')
+            ->assertJsonPath('app_versions.mandatory_update', true)
+            ->assertJsonPath('app_versions.release_notes', 'Security fixes');
     }
 
     public function test_device_control_routes_require_a_valid_active_device_credential(): void

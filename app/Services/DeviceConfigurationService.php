@@ -15,6 +15,8 @@ class DeviceConfigurationService
         'maintenance_notice',
     ];
 
+    public function __construct(private readonly AppVersionSettings $appVersions) {}
+
     /** @return array<string, mixed> */
     public function forDevice(Device $device): array
     {
@@ -46,11 +48,7 @@ class DeviceConfigurationService
                 'valid_until' => $licence->valid_until?->toIso8601String(),
                 'grace_until' => $licence->grace_until?->toIso8601String(),
             ],
-            'app_versions' => [
-                'platform' => $platform,
-                'minimum_supported' => $settings->get('minimum_'.$platform.'_version'),
-                'recommended' => $settings->get('recommended_'.$platform.'_version'),
-            ],
+            'app_versions' => ['platform' => $platform] + $this->appVersions->forPlatform($platform),
             'maintenance_notice' => $this->maintenanceNotice($settings->get('maintenance_notice')),
         ];
     }
