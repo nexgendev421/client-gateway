@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 32 - Backup and Restore
+Current phase: 33 - Final Architecture Review
 
 ## Completed
 
@@ -27,15 +27,16 @@ Current phase: 32 - Backup and Restore
 - Phase 28: Full regression suite passed with 134 tests and 884 assertions. Composer audit reported no advisories; asset build, route list, scheduler list and diff whitespace checks passed.
 - Phase 29: Added production configuration guide for HTTPS/proxy trust, sessions, shared rate-limit cache, database/log permissions, signing keys, scheduler and release caches. `.env.example` remains placeholder-only.
 - Phase 30: Added Ubuntu/HestiaCP deployment procedure including isolated Laravel public root, production setup, TLS/Cloudflare, Scheduler, monitoring, releases and rollback.
+- Phase 31: Added guarded `scripts/deploy.sh` for clean-branch fast-forward releases, dependencies/assets, migrations and cache rebuilds; verified syntax without deploying.
 - Phase 28: Full regression suite passed: 134 tests and 884 assertions. `composer audit` reported no advisories; production asset build, route list, scheduler list, and diff whitespace checks passed.
 
 ## In Progress
 
-- Phase 32 - Backup and Restore (in progress).
+- Phase 33 - Final Architecture Review (in progress).
 
 ## Pending
 
-- Phases 32-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phase 33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -251,3 +252,17 @@ Current phase: 32 - Backup and Restore
 - Implementation: Added `scripts/deploy.sh`: verifies app checkout, `.env`/APP_KEY, branch, clean tree and remote history; only fast-forwards; uses maintenance mode; installs Composer/npm dependencies, builds assets, runs forced migrations, rebuilds caches and requests queue restart. It never generates/replaces secrets, resets data or force overwrites changes. Deployment guide documents prerequisites, interruption and recovery.
 - Verification: `bash -n scripts/deploy.sh` and `git diff --check` passed. No production deployment was performed.
 - Next: Create Phase 32 backup/restore plan.
+
+### Phase 31 - Safe Deployment Script
+
+- Date: 2026-10-23.
+- Implementation: Added a fail-fast Bash deployment script and documented its prerequisites, maintenance impact, limits and recovery behavior. It rejects dirty/diverged checkouts and never regenerates or overwrites environment secrets.
+- Verification: Shell syntax and whitespace checks passed; production deployment was not run.
+- Next: Create Phase 32 backup and restore procedures.
+
+### Phase 32 - Backup and Restore
+
+- Date: 2026-10-23.
+- Implementation: Added [BACKUP-RESTORE.md](BACKUP-RESTORE.md), covering daily DB dumps, retention/off-site encryption, protected APP_KEY/signing-key recovery, import procedure, isolated restore tests, and disaster recovery. No paid provider is assumed and no credentials are included.
+- Verification: Documentation cross-checked against current schema, key configuration and deployment architecture; `git diff --check` passed.
+- Next: Perform Phase 33 final architecture review.

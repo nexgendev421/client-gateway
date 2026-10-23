@@ -954,7 +954,7 @@ Document rollback.
 Do not deploy production.
 
 ==================================================
-## Phase 32 â€” BACKUP + RESTORE â€” PENDING
+## Phase 32 — BACKUP + RESTORE — COMPLETED
 ==================================================
 
 Create:
