@@ -7,7 +7,7 @@
         ['label' => 'Activation Codes', 'section' => 'activation-codes', 'url' => route('admin.activation-codes.index')],
         ['label' => 'Licences', 'section' => 'licences', 'url' => route('admin.licences.index')],
         ['label' => 'System Health', 'section' => 'system-health', 'url' => route('admin.system-health.index')],
-        ['label' => 'Audit Logs', 'section' => 'audit-logs', 'url' => route('admin.section', ['section' => 'audit-logs']), 'ability' => 'manage-router'],
+        ['label' => 'Audit Logs', 'section' => 'audit-logs', 'url' => route('admin.audit-logs.index'), 'ability' => 'manage-router'],
         ['label' => 'Admin Users', 'section' => 'admin-users', 'url' => route('admin.admin-users.index'), 'ability' => 'manage-router'],
         ['label' => 'Settings', 'section' => 'settings', 'url' => route('admin.settings.app-versions'), 'ability' => 'manage-router'],
     ];

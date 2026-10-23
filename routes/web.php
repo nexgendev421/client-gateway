@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ActivationCodeController;
 use App\Http\Controllers\Admin\AdminSectionController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AppVersionController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeviceController;
@@ -67,6 +68,7 @@ Route::middleware(['auth', EnsureAdminIsActive::class, EnsureAdminMfaIsVerified:
     Route::post('/admin/stores/{store}/activation-codes', [ActivationCodeController::class, 'generate'])->whereNumber('store')->name('admin.stores.activation-codes.store');
     Route::get('/admin/stores/{store}', [StoreController::class, 'show'])->whereNumber('store')->name('admin.stores.show');
     Route::get('/admin/system-health', SystemHealthController::class)->name('admin.system-health.index');
+    Route::get('/admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
     Route::get('/admin/settings', [AppVersionController::class, 'edit'])->name('admin.settings.app-versions');
     Route::put('/admin/settings/app-versions', [AppVersionController::class, 'update'])->name('admin.settings.app-versions.update');
     Route::get('/admin/devices', [DeviceController::class, 'index'])->name('admin.devices.index');
@@ -92,7 +94,7 @@ Route::middleware(['auth', EnsureAdminIsActive::class, EnsureAdminMfaIsVerified:
     Route::post('/admin/admin-users/{adminUser}/disable', [AdminUserController::class, 'disable'])->whereNumber('adminUser')->name('admin.admin-users.disable');
     Route::post('/admin/admin-users/{adminUser}/enable', [AdminUserController::class, 'enable'])->whereNumber('adminUser')->name('admin.admin-users.enable');
     Route::get('/admin/{section}', AdminSectionController::class)
-        ->whereIn('section', ['customers', 'stores', 'activation-codes', 'system-health', 'audit-logs', 'admin-users', 'settings'])
+        ->whereIn('section', ['customers', 'stores', 'activation-codes', 'system-health', 'admin-users', 'settings'])
         ->name('admin.section');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

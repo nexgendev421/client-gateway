@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 23 - Audit System Review
+Current phase: 24 - Central Settings
 
 ## Completed
 
@@ -19,14 +19,15 @@ Current phase: 23 - Audit System Review
 - Phase 20: Windows/Android app version administration, device config details, and outdated-device dashboard reporting.
 - Phase 21: Admin user lifecycle, role-based operational access, audit events, and last-super-admin protection.
 - Phase 22: Encrypted TOTP setup and sign-in challenge, hashed one-use recovery codes, mandatory super-admin MFA, throttling, account security screens, and recovery documentation.
+- Phase 23: Consistent sign-in/security audit events, searchable and filterable super-admin audit log, recursive secret/token redaction, and before/after store endpoint host snapshots.
 
 ## In Progress
 
-- Phase 23 - Audit System Review (in progress).
+- Phase 24 - Central Settings (in progress).
 
 ## Pending
 
-- Phases 24-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 25-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -152,6 +153,13 @@ Current phase: 23 - Audit System Review
 - Verification: 9 focused MFA tests passed, 60 assertions; full suite passed with 116 tests and 783 assertions. `php artisan route:list --path=mfa`, changed-file Pint, and `git diff --check` passed.
 - Commit: `edaac5a` - `Implement administrator MFA`.
 - Next: Implement Phase 23 audit system review.
+### Phase 23 - Audit System Review
+
+- Date: 2026-10-23.
+- Implementation: Added success, failure, and logout audit events for administrator sign-ins; extended audit metadata redaction to nested keys and sensitive patterns in values; store edits retain safe before/after field snapshots and endpoint hosts only. Replaced the Audit Logs placeholder with a super-admin-only search, actor, action, resource, and date filtered paginated event list.
+- Verification: Audit administration tests passed (4 tests, 21 assertions); Store administration tests passed (17 tests, 125 assertions); full suite passed with 120 tests and 806 assertions. Changed-file Pint, audit route listing, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 24 central settings.
 ### Build harness and repository guidance
 
 - Date: 2026-10-23.

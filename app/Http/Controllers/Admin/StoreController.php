@@ -116,8 +116,32 @@ class StoreController extends Controller
 
             return $current !== $value;
         })->keys()->values()->all();
+        $before = [
+            'name' => $store->name,
+            'customer_id' => $store->customer_id,
+            'store_code' => $store->store_code,
+            'endpoint_host' => parse_url($store->endpoint_url, PHP_URL_HOST),
+            'status' => $store->status->value,
+            'max_devices' => $store->max_devices,
+        ];
+        $after = [
+            'name' => $data['name'],
+            'customer_id' => (int) $data['customer_id'],
+            'store_code' => $data['store_code'],
+            'endpoint_host' => parse_url($data['endpoint_url'], PHP_URL_HOST),
+            'status' => $data['status'] ?? $store->status->value,
+            'max_devices' => (int) ($data['max_devices'] ?? $store->max_devices),
+        ];
+        $safeChanges = [];
+        foreach ($changedFields as $field) {
+            $safeKey = $field === 'endpoint_url' ? 'endpoint_host' : $field;
+            if (! array_key_exists($safeKey, $before)) {
+                continue;
+            }
+            $safeChanges[$safeKey] = ['from' => $before[$safeKey], 'to' => $after[$safeKey]];
+        }
 
-        DB::transaction(function () use ($store, $data, $changedFields, $previousStatus, $request, $limits): void {
+        DB::transaction(function () use ($store, $data, $changedFields, $safeChanges, $previousStatus, $request, $limits): void {
             if ((int) $data['customer_id'] !== (int) $store->customer_id) {
                 $customerIds = [(int) $store->customer_id, (int) $data['customer_id']];
                 sort($customerIds);
@@ -131,7 +155,7 @@ class StoreController extends Controller
             }
 
             $store->update($data);
-            $this->recordAudit($store, 'store.edited', $request, ['changed_fields' => $changedFields]);
+            $this->recordAudit($store, 'store.edited', $request, ['changed_fields' => $changedFields, 'changes' => $safeChanges]);
 
             if ($previousStatus !== $store->status) {
                 $action = $store->status === StoreStatus::Suspended ? 'store.suspended' : 'store.reactivated';

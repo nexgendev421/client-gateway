@@ -74,6 +74,16 @@ class MfaChallengeController extends Controller
             ]);
         }
 
+        AuditLog::query()->create([
+            'actor_id' => $user->getKey(),
+            'action' => 'admin.login_succeeded',
+            'resource_type' => User::class,
+            'resource_id' => (string) $user->getKey(),
+            'metadata' => ['mfa_verified' => true, 'method' => $result['recovery'] ? 'recovery_code' : 'totp'],
+            'ip_address' => $request->ip(),
+            'occurred_at' => now(),
+        ]);
+
         Auth::login($user, false);
         $request->session()->forget(['mfa_pending_user_id', 'mfa_pending_at']);
         $request->session()->put('mfa_verified_user_id', $user->getKey());

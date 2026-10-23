@@ -101,11 +101,13 @@ class StoreAdministrationTest extends TestCase
     {
         $customer = Customer::factory()->create();
         $store = Store::factory()->for($customer)->create(['store_code' => 'GREENHD01']);
+        $oldEndpointHost = parse_url($store->endpoint_url, PHP_URL_HOST);
         $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
 
         $this->actingAs($admin)->put(route('admin.stores.update', $store), $this->validStoreData($customer, [
             'name' => 'Green Street Shop',
             'store_code' => 'greenhd01',
+            'endpoint_url' => 'https://new-pos.example.com',
             'status' => 'suspended',
             'notes' => 'Server moved to the new host.',
         ]))->assertRedirect(route('admin.stores.show', $store));
@@ -116,6 +118,9 @@ class StoreAdministrationTest extends TestCase
         $this->assertSame(StoreStatus::Suspended, $store->status);
         $this->assertDatabaseHas('audit_logs', ['action' => 'store.edited', 'resource_id' => (string) $store->id]);
         $this->assertDatabaseHas('audit_logs', ['action' => 'store.suspended', 'resource_id' => (string) $store->id]);
+        $editEvent = AuditLog::query()->where('action', 'store.edited')->firstOrFail();
+        $this->assertSame(['from' => $oldEndpointHost, 'to' => 'new-pos.example.com'], $editEvent->metadata['changes']['endpoint_host']);
+        $this->assertStringNotContainsString('https://new-pos.example.com', json_encode($editEvent->metadata));
     }
 
     public function test_suspend_and_reactivate_are_audited(): void

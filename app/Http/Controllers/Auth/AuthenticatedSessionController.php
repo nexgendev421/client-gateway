@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\AdminRole;
 use App\Enums\AdminStatus;
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +33,8 @@ class AuthenticatedSessionController extends Controller
         $credentials['status'] = AdminStatus::Active->value;
 
         if (! Auth::attempt($credentials, false)) {
+            $this->recordLoginEvent(null, 'admin.login_failed', $request, ['reason' => 'credentials_rejected']);
+
             return back()
                 ->withErrors(['email' => 'These credentials do not match our records.'])
                 ->onlyInput('email');
@@ -49,6 +53,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+        $this->recordLoginEvent($user, 'admin.login_succeeded', $request, ['mfa_verified' => false]);
         if ($user->role === AdminRole::SuperAdmin) {
             return redirect()->route('admin.mfa.setup');
         }
@@ -58,10 +63,26 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
+        if ($request->user()) {
+            $this->recordLoginEvent($request->user(), 'admin.logout', $request, []);
+        }
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    private function recordLoginEvent(?User $actor, string $action, Request $request, array $metadata): void
+    {
+        AuditLog::query()->create([
+            'actor_id' => $actor?->getKey(),
+            'action' => $action,
+            'resource_type' => User::class,
+            'resource_id' => $actor ? (string) $actor->getKey() : null,
+            'metadata' => $metadata,
+            'ip_address' => $request->ip(),
+            'occurred_at' => now(),
+        ]);
     }
 }
