@@ -46,4 +46,4 @@ Use the Router key storage procedure in [DEVICE-PROVISIONING.md](DEVICE-PROVISIO
 
 ## Scope boundary
 
-This Router repository creates and signs licence documents. Licence delivery is implemented by the authenticated refresh API in Phase 16. Customer POS caching and local enforcement remain in the separate customer POS project. The Gateway is not in the sales request path.
+This Router repository creates and signs licence documents. Authenticated client devices refresh the current signed document with `GET /api/v1/device/licence` using their Router credential as a Bearer header. The Router derives customer scope from the authenticated Device; the caller cannot request a different customer or licence ID. The response includes the signed document, clear current state, and validity/grace dates. If the customer has no licence, the API returns `state=unlicensed` with a null document. Responses are `no-store` and device API rate limits apply. Customer POS caching and local enforcement remain in the separate customer POS project. The Gateway is not in the sales request path.

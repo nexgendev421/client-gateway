@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 16 - Licence Refresh API
+Current phase: 17 - Licence Limit Enforcement
 
 ## Completed
 
@@ -12,14 +12,15 @@ Current phase: 16 - Licence Refresh API
 - Phase 13: Authenticated device heartbeat and config APIs.
 - Phase 14: Customer-level licence administration and audit workflows.
 - Phase 15: Shared RS256 signing service and offline-verifiable signed licence documents.
+- Phase 16: Authenticated per-customer signed licence refresh API.
 
 ## In Progress
 
-- Phase 16 - Licence Refresh API.
+- Phase 17 - Licence Limit Enforcement.
 
 ## Pending
 
-- Phases 17-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 18-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -83,9 +84,17 @@ Current phase: 16 - Licence Refresh API
 - Date: 2026-10-23.
 - Implementation: Extracted a shared RS256 JWT signer for provisioning and licence tokens. It loads the external private key/passphrase, enforces RSA keys of at least 2048 bits, includes configured `kid`, and never persists or logs key material. Added signed licence documents with customer/licence identifiers, plan, status, dates, limits, filtered features, `iat`, and random `jti`. Added [LICENSING.md](LICENSING.md) for offline verification, outage behavior, clock rollback, and key rotation.
 - Verification: 4 focused signature tests passed, 32 assertions; full suite passed with 82 tests and 569 assertions; SQLite `migrate:fresh`, targeted Pint, and `git diff --check` passed. Tests generated ephemeral RSA keys outside the repository and verified real signatures.
-- Commit: Pending.
+- Commit: `eda06d1` - `Add offline signed licence documents`.
 - Design note: Licence dates are signed claims rather than JWT `exp`, allowing offline verification to distinguish expiry/grace/restriction after dates pass. Customer POS enforcement remains in its separate repository.
 - Next: Implement Phase 16 authenticated licence refresh API.
+
+### Phase 16 - Licence Refresh API
+
+- Date: 2026-10-23.
+- Implementation: Added GET /api/v1/device/licence, authenticated by the registered device credential and scoped from that device to its customer. It returns the current signed document, clear status and validity/grace dates, or an explicit unlicensed state. Responses are no-store and share the per-device API rate limit. Signing failures return a safe service response.
+- Verification: 4 focused feature tests passed, 21 assertions; full suite passed with 86 tests and 590 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 17 licence limit enforcement.
 
 ### Build harness and repository guidance
 

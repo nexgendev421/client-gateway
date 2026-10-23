@@ -368,7 +368,7 @@ Do not implement customer POS enforcement here.
 Add tests.
 
 ==================================================
-## Phase 16 â€” LICENCE REFRESH API â€” IN PROGRESS
+## Phase 16 â€” LICENCE REFRESH API â€” COMPLETED
 ==================================================
 
 Implement secure API for authorised customer/device context to retrieve latest signed licence.
@@ -385,7 +385,7 @@ Requirements:
 Add tests.
 
 ==================================================
-## Phase 17 â€” LICENCE LIMIT ENFORCEMENT â€” PENDING
+## Phase 17 â€” LICENCE LIMIT ENFORCEMENT â€” IN PROGRESS
 ==================================================
 
 Integrate limits with:
