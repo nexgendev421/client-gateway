@@ -33,6 +33,7 @@
                     <div class="hidden text-sm text-slate-500 lg:block">Router control centre</div>
                     <div class="flex items-center gap-3">
                         <span class="hidden text-sm text-slate-600 sm:block">{{ auth()->user()->name }}</span>
+                        <a href="{{ route('admin.mfa.setup') }}" class="rounded-lg px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50">Security</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100">Sign out</button>

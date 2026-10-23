@@ -8,10 +8,13 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeviceController;
 use App\Http\Controllers\Admin\LicenceController;
+use App\Http\Controllers\Admin\MfaController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\MfaChallengeController;
 use App\Http\Middleware\EnsureAdminIsActive;
+use App\Http\Middleware\EnsureAdminMfaIsVerified;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,7 +28,18 @@ Route::middleware('guest')->group(function (): void {
         ->name('login.store');
 });
 
-Route::middleware(['auth', EnsureAdminIsActive::class])->group(function (): void {
+Route::middleware('guest')->group(function (): void {
+    Route::get('/mfa/challenge', [MfaChallengeController::class, 'create'])->name('mfa.challenge');
+    Route::post('/mfa/challenge', [MfaChallengeController::class, 'verify'])->middleware('throttle:mfa')->name('mfa.challenge.verify');
+    Route::post('/mfa/cancel', [MfaChallengeController::class, 'cancel'])->name('mfa.challenge.cancel');
+});
+
+Route::middleware(['auth', EnsureAdminIsActive::class, EnsureAdminMfaIsVerified::class])->group(function (): void {
+    Route::get('/admin/mfa/setup', [MfaController::class, 'setup'])->name('admin.mfa.setup');
+    Route::post('/admin/mfa/setup/begin', [MfaController::class, 'begin'])->middleware('throttle:mfa')->name('admin.mfa.setup.begin');
+    Route::post('/admin/mfa/setup/confirm', [MfaController::class, 'confirm'])->middleware('throttle:mfa')->name('admin.mfa.setup.confirm');
+    Route::post('/admin/mfa/reset', [MfaController::class, 'reset'])->middleware('throttle:mfa')->name('admin.mfa.reset');
+    Route::post('/admin/mfa/disable', [MfaController::class, 'disable'])->middleware('throttle:mfa')->name('admin.mfa.disable');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/admin/customers', [CustomerController::class, 'index'])->name('admin.customers.index');
     Route::get('/admin/customers/create', [CustomerController::class, 'create'])->name('admin.customers.create');

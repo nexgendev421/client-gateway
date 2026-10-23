@@ -1,4 +1,4 @@
-﻿# SiyazPOS Router Build Roadmap
+# SiyazPOS Router Build Roadmap
 
 This is the source of truth for the remaining structured build. Implement phases in order, inspect existing code before each phase, avoid duplicates, preserve existing behavior, test each phase, update `docs/BUILD-STATUS.md`, review changes, and commit only when the worktree/staging scope is safe. Do not deploy or push without explicit authorization.
 
@@ -533,7 +533,7 @@ Audit sensitive actions.
 Authorization tests.
 
 ==================================================
-## Phase 22 â€” ADMIN MFA â€” PENDING
+## Phase 22 â€” ADMIN MFA â€” COMPLETE
 ==================================================
 
 Implement TOTP MFA.

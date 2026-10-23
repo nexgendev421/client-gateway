@@ -1,6 +1,6 @@
-﻿# Build Status
+# Build Status
 
-Current phase: 21 - Admin Users and Roles
+Current phase: 23 - Audit System Review
 
 ## Completed
 
@@ -18,14 +18,15 @@ Current phase: 21 - Admin Users and Roles
 - Phase 19: Scheduled SSRF-safe endpoint checks, per-store lock, and history pruning.
 - Phase 20: Windows/Android app version administration, device config details, and outdated-device dashboard reporting.
 - Phase 21: Admin user lifecycle, role-based operational access, audit events, and last-super-admin protection.
+- Phase 22: Encrypted TOTP setup and sign-in challenge, hashed one-use recovery codes, mandatory super-admin MFA, throttling, account security screens, and recovery documentation.
 
 ## In Progress
 
-- Phase 22 - Admin MFA.
+- Phase 23 - Audit System Review (in progress).
 
 ## Pending
 
-- Phases 23-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 24-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -141,9 +142,16 @@ Current phase: 21 - Admin Users and Roles
 - Existing behavior: Authentication already stored role/status enums, denied disabled users, and granted super admins full access. Support and read-only users were previously view-only.
 - Implementation: Added super-admin user search/list/create/edit/enable/disable, strong password set/reset, role/status changes, role-aware nav, and security audit events. Support can manage operational customer/store/device/activation workflows while remaining restricted from customer archive, permanent device revoke, licensing, app/system settings, audit tools, and admin accounts. Read-only remains view-only. Active super-admin row locks protect the last account from demotion/disable; self-disable is rejected. Added [ADMIN-ACCESS.md](ADMIN-ACCESS.md).
 - Verification: 6 focused admin-user tests passed, 38 assertions; full suite passed with 107 tests and 723 assertions; changed-file Pint, route listing, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `76e14e2` - `Manage admin users and roles`.
 - Next: Implement Phase 22 admin MFA.
 
+### Phase 22 - Admin MFA
+
+- Date: 2026-10-23.
+- Implementation: Added encrypted TOTP secrets, local QR provisioning, authenticator setup/confirmation, MFA login challenge with TOTP replay prevention, ten individually hashed single-use recovery codes, secure password-plus-MFA reset/disable workflows, per-user/IP attempt throttling, and mandatory enrollment for super admins. MFA screens containing secrets or recovery codes are marked no-store. Added [ADMIN-MFA.md](ADMIN-MFA.md) recovery and key-management instructions.
+- Verification: 9 focused MFA tests passed, 60 assertions; full suite passed with 116 tests and 783 assertions. `php artisan route:list --path=mfa`, changed-file Pint, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 23 audit system review.
 ### Build harness and repository guidance
 
 - Date: 2026-10-23.

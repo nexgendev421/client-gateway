@@ -58,6 +58,10 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => $role,
+            ...($role === AdminRole::SuperAdmin ? [
+                'mfa_secret' => 'JBSWY3DPEHPK3PXP',
+                'mfa_enabled_at' => now(),
+            ] : []),
         ]);
     }
 }

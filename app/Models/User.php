@@ -37,6 +37,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'mfa_secret',
+        'mfa_pending_secret',
     ];
 
     /**
@@ -51,6 +53,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => AdminRole::class,
             'status' => AdminStatus::class,
+            'mfa_secret' => 'encrypted',
+            'mfa_pending_secret' => 'encrypted',
+            'mfa_enabled_at' => 'datetime',
+            'mfa_last_used_step' => 'integer',
         ];
     }
 
@@ -67,5 +73,15 @@ class User extends Authenticatable
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class, 'actor_id');
+    }
+
+    public function mfaRecoveryCodes(): HasMany
+    {
+        return $this->hasMany(MfaRecoveryCode::class);
+    }
+
+    public function hasMfaEnabled(): bool
+    {
+        return $this->mfa_enabled_at !== null && $this->mfa_secret !== null;
     }
 }

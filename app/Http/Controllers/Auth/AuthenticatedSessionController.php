@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AdminRole;
 use App\Enums\AdminStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -35,7 +36,22 @@ class AuthenticatedSessionController extends Controller
                 ->onlyInput('email');
         }
 
+        $user = Auth::user();
+        if ($user->hasMfaEnabled()) {
+            Auth::logout();
+            $request->session()->regenerate();
+            $request->session()->put([
+                'mfa_pending_user_id' => $user->getKey(),
+                'mfa_pending_at' => now()->timestamp,
+            ]);
+
+            return redirect()->route('mfa.challenge');
+        }
+
         $request->session()->regenerate();
+        if ($user->role === AdminRole::SuperAdmin) {
+            return redirect()->route('admin.mfa.setup');
+        }
 
         return redirect()->intended(route('dashboard'));
     }
