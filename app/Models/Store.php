@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\HealthCheckStatus;
 use App\Enums\StoreStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,5 +63,13 @@ class Store extends Model
     public function latestHealthCheck(): HasOne
     {
         return $this->hasOne(HealthCheck::class)->latestOfMany('checked_at');
+    }
+
+    public function latestSuccessfulHealthCheck(): HasOne
+    {
+        return $this->hasOne(HealthCheck::class)->ofMany(
+            ['checked_at' => 'max', 'id' => 'max'],
+            fn (Builder $query) => $query->where('status', HealthCheckStatus::Online->value),
+        );
     }
 }

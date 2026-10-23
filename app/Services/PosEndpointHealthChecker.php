@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\HealthCheckStatus;
 use App\Models\HealthCheck;
 use App\Models\Store;
+use Illuminate\Support\Facades\Cache;
 use JsonException;
 
 class PosEndpointHealthChecker
@@ -15,6 +16,20 @@ class PosEndpointHealthChecker
     ) {}
 
     public function check(Store $store): HealthCheck
+    {
+        $lock = Cache::lock('pos-health-check:store:'.$store->getKey(), 15);
+        if (! $lock->get()) {
+            throw new HealthCheckInProgress;
+        }
+
+        try {
+            return $this->performCheck($store);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function performCheck(Store $store): HealthCheck
     {
         $url = $store->endpoint_url;
         $error = $this->guard->validationError($url, true);

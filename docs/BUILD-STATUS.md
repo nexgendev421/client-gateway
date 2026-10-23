@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 18 - Emergency Licence Extensions
+Current phase: 20 - App Version Management
 
 ## Completed
 
@@ -14,14 +14,16 @@ Current phase: 18 - Emergency Licence Extensions
 - Phase 15: Shared RS256 signing service and offline-verifiable signed licence documents.
 - Phase 16: Authenticated per-customer signed licence refresh API.
 - Phase 17: Licence store/device limit enforcement and over-limit reporting.
+- Phase 18: Controlled temporary emergency licence extensions.
+- Phase 19: Scheduled SSRF-safe endpoint checks, per-store lock, and history pruning.
 
 ## In Progress
 
-- Phase 18 - Emergency Licence Extensions.
+- Phase 20 - App Version Management.
 
 ## Pending
 
-- Phases 19-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 21-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -111,8 +113,16 @@ Current phase: 18 - Emergency Licence Extensions
 - Existing behavior: Licence expiry updates already had a protected admin action, required reason, actor attribution, audit history, and signed-token fields sourced from the persisted licence.
 - Implementation: Added controlled one-, three-, and seven-day extensions, plus an explicit custom expiry option. Extensions from an already expired licence count from the current time. The audit entry retains old/new expiry, old/new status, extension type, reason, and actor; custom expiry must be later than the current expiry or now, whichever is later.
 - Verification: 6 focused tests passed, 76 assertions; full suite passed with 92 tests and 628 assertions; changed-file Pint and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `ca72efd` - `Add emergency licence extensions`.
 - Next: Implement Phase 19 automated health monitoring.
+
+### Phase 19 - Automated Health Monitoring
+
+- Date: 2026-10-23.
+- Implementation: Added a five-minute scheduled command to check active POS endpoints sequentially (bounded concurrency of one) using the existing SSRF-safe transport, per-store cache locks shared with manual checks, 3-second connection and 6-second overall timeouts, and safe error records. Added daily configurable history pruning that retains the latest record for each store. System Health now shows last success and the last successful POS/API versions alongside current status and response time.
+- Verification: 3 dedicated monitoring command tests passed, 15 assertions; full suite passed with 96 tests and 647 assertions; scheduler listing confirmed five-minute and daily tasks; changed-file Pint and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 20 app version management.
 
 ### Build harness and repository guidance
 

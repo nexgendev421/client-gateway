@@ -417,7 +417,7 @@ Tests:
 - existing over-limit customer
 
 ==================================================
-## Phase 18 â€” EMERGENCY LICENCE EXTENSIONS â€” IN PROGRESS
+## Phase 18 â€” EMERGENCY LICENCE EXTENSIONS â€” COMPLETED
 ==================================================
 
 Implement controlled temporary extension:
@@ -441,7 +441,7 @@ Signed licence must reflect effective extension/grace.
 Tests.
 
 ==================================================
-## Phase 19 â€” AUTOMATED HEALTH MONITORING â€” PENDING
+## Phase 19 â€” AUTOMATED HEALTH MONITORING â€” COMPLETED
 ==================================================
 
 Extend existing manual health checking to scheduled checks.

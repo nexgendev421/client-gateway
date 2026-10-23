@@ -15,12 +15,15 @@ use App\Models\HealthCheck;
 use App\Models\Licence;
 use App\Models\Store;
 use App\Models\User;
+use App\Services\HealthCheckInProgress;
 use App\Services\PosEndpointException;
 use App\Services\PosEndpointGuard;
+use App\Services\PosEndpointHealthChecker;
 use App\Services\PosHealthResponse;
 use App\Services\PosHealthTransport;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Mockery;
@@ -205,6 +208,26 @@ class StoreAdministrationTest extends TestCase
             'status' => HealthCheckStatus::Offline->value,
             'safe_error_code' => 'ENDPOINT_ADDRESS_BLOCKED',
         ]);
+    }
+
+    public function test_health_checker_skips_a_store_with_an_existing_check_lock(): void
+    {
+        $store = Store::factory()->create();
+        $lock = Cache::lock('pos-health-check:store:'.$store->id, 15);
+        $this->assertTrue($lock->get());
+        $transport = Mockery::mock(PosHealthTransport::class);
+        $transport->shouldNotReceive('get');
+        $guard = Mockery::mock(PosEndpointGuard::class);
+        $guard->shouldNotReceive('validationError');
+
+        try {
+            app(PosEndpointHealthChecker::class)->check($store);
+            $this->fail('Expected concurrent health check to be skipped.');
+        } catch (HealthCheckInProgress) {
+            $this->assertDatabaseCount('health_checks', 0);
+        } finally {
+            $lock->release();
+        }
     }
 
     public function test_health_check_does_not_follow_redirects_or_accept_unhealthy_payloads(): void

@@ -9,6 +9,7 @@ use App\Http\Requests\StoreRequest;
 use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Store;
+use App\Services\HealthCheckInProgress;
 use App\Services\LicenceLimitService;
 use App\Services\PosEndpointHealthChecker;
 use Illuminate\Database\Eloquent\Builder;
@@ -173,7 +174,11 @@ class StoreController extends Controller
     public function testConnection(Request $request, Store $store, PosEndpointHealthChecker $healthChecker): RedirectResponse
     {
         $this->authorize('testConnection', $store);
-        $check = $healthChecker->check($store);
+        try {
+            $check = $healthChecker->check($store);
+        } catch (HealthCheckInProgress) {
+            return redirect()->route('admin.stores.show', $store)->with('status', 'A health check is already running for this store.');
+        }
 
         DB::transaction(function () use ($store, $check, $request): void {
             $this->recordAudit($store, 'store.connection_tested', $request, [

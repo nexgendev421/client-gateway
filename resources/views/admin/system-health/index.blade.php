@@ -6,7 +6,7 @@
     <div class="mb-6">
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-blue-700">Router administration</p>
         <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">System Health</h1>
-        <p class="mt-1 text-sm text-slate-500">Latest manually requested health result for each customer POS endpoint.</p>
+        <p class="mt-1 text-sm text-slate-500">Automated endpoint checks run every five minutes; admins can also run a manual check from a store page.</p>
     </div>
 
     <div class="mb-5 grid gap-4 sm:grid-cols-3">
@@ -16,22 +16,25 @@
     </div>
 
     <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <header class="border-b border-slate-200 px-5 py-4"><h2 class="text-sm font-semibold">Store endpoints</h2><p class="mt-1 text-xs text-slate-500">Run a check from the store detail page. Automated checks are not enabled.</p></header>
+        <header class="border-b border-slate-200 px-5 py-4"><h2 class="text-sm font-semibold">Store endpoints</h2><p class="mt-1 text-xs text-slate-500">Latest status, response time, reported versions, and most recent successful response.</p></header>
         @if ($stores->isEmpty())
             <p class="px-5 py-10 text-center text-sm text-slate-500">No stores have been registered.</p>
         @else
-            <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left text-sm">
-                <thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="px-5 py-3">Store</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Response</th><th class="px-4 py-3">Last checked</th><th class="px-5 py-3"></th></tr></thead>
+            <div class="overflow-x-auto"><table class="w-full min-w-[980px] text-left text-sm">
+                <thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="px-5 py-3">Store</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Response</th><th class="px-4 py-3">Last checked</th><th class="px-4 py-3">POS / API</th><th class="px-4 py-3">Last success</th><th class="px-5 py-3"></th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @foreach ($stores as $store)
                         @php($health = $store->latestHealthCheck)
+                        @php($lastSuccess = $store->latestSuccessfulHealthCheck)
                         @php($isOnline = $health?->status === \App\Enums\HealthCheckStatus::Online)
                         <tr>
                             <td class="px-5 py-3"><a href="{{ route('admin.stores.show', $store) }}" class="font-medium text-blue-700 hover:text-blue-900">{{ $store->name }}</a><p class="font-mono text-xs text-slate-500">{{ $store->store_code }}</p></td>
                             <td class="px-4 py-3 text-slate-600">{{ $store->customer->business_name }}</td>
-                            <td class="px-4 py-3">@if($health)<span class="rounded-full px-2.5 py-1 text-xs font-medium {{ $isOnline ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">{{ $isOnline ? 'Online' : 'Offline' }}</span>@else<span class="text-xs text-slate-400">Not checked</span>@endif</td>
+                            <td class="px-4 py-3">@if($health)<span class="rounded-full px-2.5 py-1 text-xs font-medium {{ $isOnline ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">{{ $isOnline ? 'Online' : 'Offline' }}</span>@if($isOnline && $health->response_time_ms >= 2000)<span class="ml-1 rounded-full bg-amber-50 px-2 py-1 text-[11px] font-medium text-amber-800">Slow</span>@endif @else<span class="text-xs text-slate-400">Not checked</span>@endif</td>
                             <td class="px-4 py-3 text-slate-600">{{ $health?->response_time_ms !== null ? $health->response_time_ms.' ms' : '—' }}</td>
                             <td class="px-4 py-3 text-xs text-slate-500">{{ $health?->checked_at?->format('j M Y, H:i:s') ?? '—' }}</td>
+                            <td class="px-4 py-3 text-xs text-slate-600">{{ $lastSuccess?->pos_version ?? 'Not reported' }} / {{ $lastSuccess?->api_version ?? 'Not reported' }}</td>
+                            <td class="px-4 py-3 text-xs text-slate-500">{{ $lastSuccess?->checked_at?->format('j M Y, H:i:s') ?? 'Never' }}</td>
                             <td class="px-5 py-3 text-right"><a href="{{ route('admin.stores.show', $store) }}" class="text-xs font-semibold text-blue-700 hover:text-blue-900">View store</a></td>
                         </tr>
                     @endforeach

@@ -14,7 +14,7 @@ class SystemHealthController extends Controller
     {
         $this->authorize('viewAny', Store::class);
 
-        $stores = Store::query()->with(['customer', 'latestHealthCheck'])->orderBy('name')->paginate(25);
+        $stores = Store::query()->with(['customer', 'latestHealthCheck', 'latestSuccessfulHealthCheck'])->orderBy('name')->paginate(25);
         $recentChecks = HealthCheck::query()->with(['store.customer'])->orderByDesc('checked_at')->limit(20)->get();
         $onlineCount = Store::query()->whereHas('latestHealthCheck', fn ($query) => $query->where('status', HealthCheckStatus::Online))->count();
         $offlineCount = Store::query()->whereHas('latestHealthCheck', fn ($query) => $query->where('status', HealthCheckStatus::Offline))->count();
