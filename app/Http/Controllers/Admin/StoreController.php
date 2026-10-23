@@ -9,11 +9,13 @@ use App\Http\Requests\StoreRequest;
 use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Store;
+use App\Services\LicenceLimitService;
 use App\Services\PosEndpointHealthChecker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class StoreController extends Controller
@@ -51,14 +53,21 @@ class StoreController extends Controller
         return view('admin.stores.create', compact('customers'));
     }
 
-    public function store(StoreRequest $request): RedirectResponse
+    public function store(StoreRequest $request, LicenceLimitService $limits): RedirectResponse
     {
         $this->authorize('create', Store::class);
         $data = $request->validated();
         $data['status'] ??= StoreStatus::Active->value;
         $data['max_devices'] ??= 10;
 
-        $store = DB::transaction(function () use ($data, $request): Store {
+        $store = DB::transaction(function () use ($data, $request, $limits): Store {
+            $customer = Customer::query()->whereKey($data['customer_id'])->lockForUpdate()->firstOrFail();
+            $customer->load('licence');
+            $limit = $customer->licence?->max_stores;
+            if ($limit !== null && $limits->storeCount($customer) >= $limit) {
+                throw ValidationException::withMessages(['customer_id' => 'This customer has reached the maximum number of stores allowed by their licence.']);
+            }
+
             $store = Store::query()->create($data);
             $this->recordAudit($store, 'store.created', $request, ['changed_fields' => array_keys($data)]);
 
@@ -68,10 +77,11 @@ class StoreController extends Controller
         return redirect()->route('admin.stores.show', $store)->with('status', 'Store created.');
     }
 
-    public function show(Store $store): View
+    public function show(Store $store, LicenceLimitService $limits): View
     {
         $this->authorize('view', $store);
-        $store->load(['customer.licence', 'latestHealthCheck'])->loadCount('devices');
+        $store->load(['customer.licence', 'latestHealthCheck'])->loadCount(['devices as licence_devices_count' => fn ($query) => $query->where('status', '!=', 'revoked')]);
+        $limitUsage = $limits->customerUsage($store->customer);
         $devices = $store->devices()->orderByDesc('registered_at')->limit(20)->get();
         $activity = AuditLog::query()->with('actor')
             ->where('resource_type', Store::class)
@@ -80,7 +90,7 @@ class StoreController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.stores.show', compact('store', 'devices', 'activity'));
+        return view('admin.stores.show', compact('store', 'devices', 'activity', 'limitUsage'));
     }
 
     public function edit(Store $store): View
@@ -94,7 +104,7 @@ class StoreController extends Controller
         return view('admin.stores.edit', compact('store', 'customers'));
     }
 
-    public function update(StoreRequest $request, Store $store): RedirectResponse
+    public function update(StoreRequest $request, Store $store, LicenceLimitService $limits): RedirectResponse
     {
         $this->authorize('update', $store);
         $data = $request->validated();
@@ -106,7 +116,19 @@ class StoreController extends Controller
             return $current !== $value;
         })->keys()->values()->all();
 
-        DB::transaction(function () use ($store, $data, $changedFields, $previousStatus, $request): void {
+        DB::transaction(function () use ($store, $data, $changedFields, $previousStatus, $request, $limits): void {
+            if ((int) $data['customer_id'] !== (int) $store->customer_id) {
+                $customerIds = [(int) $store->customer_id, (int) $data['customer_id']];
+                sort($customerIds);
+                $lockedCustomers = Customer::query()->whereIn('id', $customerIds)->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+                $target = $lockedCustomers->get((int) $data['customer_id']);
+                $target?->load('licence');
+                $limit = $target?->licence?->max_stores;
+                if ($target && $limit !== null && $limits->storeCount($target) >= $limit) {
+                    throw ValidationException::withMessages(['customer_id' => 'The selected customer has reached the maximum number of stores allowed by their licence.']);
+                }
+            }
+
             $store->update($data);
             $this->recordAudit($store, 'store.edited', $request, ['changed_fields' => $changedFields]);
 

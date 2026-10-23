@@ -385,7 +385,7 @@ Requirements:
 Add tests.
 
 ==================================================
-## Phase 17 â€” LICENCE LIMIT ENFORCEMENT â€” IN PROGRESS
+## Phase 17 â€” LICENCE LIMIT ENFORCEMENT â€” COMPLETED
 ==================================================
 
 Integrate limits with:

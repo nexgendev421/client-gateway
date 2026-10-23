@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CustomerRequest;
 use App\Models\AuditLog;
 use App\Models\Customer;
+use App\Services\LicenceLimitService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -62,11 +63,12 @@ class CustomerController extends Controller
         return redirect()->route('admin.customers.show', $customer)->with('status', 'Customer created.');
     }
 
-    public function show(Request $request, Customer $customer): View
+    public function show(Request $request, Customer $customer, LicenceLimitService $limits): View
     {
         $this->authorize('view', $customer);
         $customer->loadCount(['stores', 'devices']);
         $customer->load('licence');
+        $limitUsage = $limits->customerUsage($customer);
         $tab = $request->query('tab', 'overview');
         $tabs = ['overview', 'stores', 'devices', 'licence', 'activity', 'notes'];
 
@@ -75,7 +77,7 @@ class CustomerController extends Controller
         }
 
         $stores = $tab === 'stores'
-            ? $customer->stores()->with('latestHealthCheck')->withCount('devices')->orderBy('name')->paginate(20)->withQueryString()
+            ? $customer->stores()->with('latestHealthCheck')->withCount(['devices as licence_devices_count' => fn ($query) => $query->where('status', '!=', 'revoked')])->orderBy('name')->paginate(20)->withQueryString()
             : collect();
         $devices = $tab === 'devices'
             ? $customer->devices()->with('store')->orderBy('name')->paginate(20)->withQueryString()
@@ -89,7 +91,7 @@ class CustomerController extends Controller
                 ->get()
             : collect();
 
-        return view('admin.customers.show', compact('customer', 'tab', 'stores', 'devices', 'activity'));
+        return view('admin.customers.show', compact('customer', 'tab', 'stores', 'devices', 'activity', 'limitUsage'));
     }
 
     public function edit(Customer $customer): View

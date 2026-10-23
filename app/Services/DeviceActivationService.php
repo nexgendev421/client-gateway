@@ -17,6 +17,7 @@ class DeviceActivationService
         private readonly ActivationCodeService $activationCodes,
         private readonly PosEndpointGuard $endpointGuard,
         private readonly ProvisioningTokenIssuer $tokenIssuer,
+        private readonly LicenceLimitService $licenceLimits,
     ) {}
 
     /** @param array{store_code:string,activation_code:string,device_id:string,device_name:string,platform:string,app_version:string} $data */
@@ -45,11 +46,8 @@ class DeviceActivationService
                     throw new ActivationRejected;
                 }
 
-                $storeDeviceCount = $store->devices()->where('status', '!=', DeviceStatus::Revoked->value)->count();
-                $customerDeviceCount = Device::query()
-                    ->whereHas('store', fn ($query) => $query->where('customer_id', $customer->getKey()))
-                    ->where('status', '!=', DeviceStatus::Revoked->value)
-                    ->count();
+                $storeDeviceCount = $this->licenceLimits->storeDeviceCount($store);
+                $customerDeviceCount = $this->licenceLimits->customerDeviceCount($customer);
 
                 if ($storeDeviceCount >= $store->max_devices
                     || ($licence->max_devices !== null && $customerDeviceCount >= $licence->max_devices)) {

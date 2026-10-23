@@ -95,7 +95,7 @@
                 @else
                     <div class="overflow-x-auto"><table class="w-full min-w-[650px] text-left text-sm"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="px-5 py-3">Store</th><th class="px-4 py-3">Store code</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Devices</th><th class="px-5 py-3">Latest health</th></tr></thead><tbody class="divide-y divide-slate-100">
                         @foreach ($stores as $store)
-                            <tr><td class="px-5 py-3 font-medium">{{ $store->name }}</td><td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $store->store_code }}</td><td class="px-4 py-3 capitalize">{{ $store->status->value }}</td><td class="px-4 py-3 tabular-nums">{{ $store->devices_count }}</td><td class="px-5 py-3 text-xs text-slate-500">{{ $store->latestHealthCheck?->checked_at?->format('j M Y, H:i') ?? 'No checks' }}</td></tr>
+                            <tr><td class="px-5 py-3 font-medium">{{ $store->name }}</td><td class="px-4 py-3 font-mono text-xs text-slate-600">{{ $store->store_code }}</td><td class="px-4 py-3 capitalize">{{ $store->status->value }}</td><td class="px-4 py-3 tabular-nums">{{ $store->licence_devices_count }}</td><td class="px-5 py-3 text-xs text-slate-500">{{ $store->latestHealthCheck?->checked_at?->format('j M Y, H:i') ?? 'No checks' }}</td></tr>
                         @endforeach
                     </tbody></table></div>
                     @if ($stores->hasPages())<div class="border-t border-slate-200 px-5 py-3">{{ $stores->links() }}</div>@endif
@@ -128,8 +128,11 @@
                         <div><dt class="text-xs text-slate-500">Status</dt><dd class="mt-1 text-sm font-medium capitalize">{{ str_replace('_', ' ', $customer->licence->status->value) }}</dd></div>
                         <div><dt class="text-xs text-slate-500">Starts</dt><dd class="mt-1 text-sm">{{ $customer->licence->starts_at->format('j M Y') }}</dd></div>
                         <div><dt class="text-xs text-slate-500">Valid until</dt><dd class="mt-1 text-sm">{{ $customer->licence->valid_until->format('j M Y') }}</dd></div>
+                        <div><dt class="text-xs text-slate-500">Stores in use</dt><dd class="mt-1 text-sm font-medium">{{ $limitUsage['stores'] }} / {{ $limitUsage['store_limit'] ?? '∞' }} @if($limitUsage['stores_over_limit'])<span class="ml-1 text-xs font-semibold text-rose-700">Over limit</span>@elseif($limitUsage['stores_at_limit'])<span class="ml-1 text-xs font-semibold text-amber-700">At limit</span>@endif</dd></div>
+                        <div><dt class="text-xs text-slate-500">Devices in use</dt><dd class="mt-1 text-sm font-medium">{{ $limitUsage['devices'] }} / {{ $limitUsage['device_limit'] ?? '∞' }} @if($limitUsage['devices_over_limit'])<span class="ml-1 text-xs font-semibold text-rose-700">Over limit</span>@elseif($limitUsage['devices_at_limit'])<span class="ml-1 text-xs font-semibold text-amber-700">At limit</span>@endif</dd></div>
                         <div><dt class="text-xs text-slate-500">Maximum stores</dt><dd class="mt-1 text-sm">{{ $customer->licence->max_stores ?? 'No limit set' }}</dd></div>
                         <div><dt class="text-xs text-slate-500">Maximum devices</dt><dd class="mt-1 text-sm">{{ $customer->licence->max_devices ?? 'No limit set' }}</dd></div>
+                        @if($limitUsage['stores_over_limit'] || $limitUsage['devices_over_limit'])<p class="sm:col-span-2 lg:col-span-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">This account currently exceeds one or more licence limits. Existing stores and devices remain available; new registrations are blocked until capacity is available.</p>@endif
                     </dl>
                 @else
                     <p class="mt-4 rounded-lg bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">No licence is associated with this customer.</p>

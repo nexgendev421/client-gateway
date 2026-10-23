@@ -182,6 +182,35 @@ class ActivationCodeFlowTest extends TestCase
         $this->assertSame(0, Device::query()->where('store_id', $secondStore->id)->count());
     }
 
+    public function test_revoked_devices_free_capacity_and_grace_licence_allows_registration(): void
+    {
+        $store = Store::factory()->create(['max_devices' => 1]);
+        $this->addLicence($store, [
+            'max_devices' => 1,
+            'status' => LicenceStatus::Grace,
+            'valid_until' => now()->subDay(),
+            'grace_until' => now()->addWeek(),
+        ]);
+        Device::factory()->for($store)->create(['status' => 'revoked']);
+        $code = $this->makeCode($store, '31323334');
+        $this->fakeTokenIssuer();
+
+        $this->postJson(route('api.v1.activate'), $this->payload($store, '3132-3334', 'SYP-TEST-GRACE'))->assertCreated();
+        $this->assertSame(1, $code->fresh()->used_count);
+        $this->assertSame(2, Device::query()->where('store_id', $store->id)->count());
+    }
+
+    public function test_expired_licence_blocks_activation_without_consuming_code(): void
+    {
+        $store = Store::factory()->create();
+        $this->addLicence($store, ['valid_until' => now()->subSecond()]);
+        $code = $this->makeCode($store, '41424344');
+
+        $this->postJson(route('api.v1.activate'), $this->payload($store, '4142-4344', 'SYP-TEST-EXPIRED'))->assertUnprocessable();
+        $this->assertSame(0, $code->fresh()->used_count);
+        $this->assertDatabaseMissing('devices', ['public_id' => 'SYP-TEST-EXPIRED']);
+    }
+
     public function test_token_signing_failure_rolls_back_device_and_code_consumption(): void
     {
         $store = Store::factory()->create();

@@ -301,6 +301,51 @@ class StoreAdministrationTest extends TestCase
         $this->assertDatabaseCount('stores', 0);
     }
 
+    public function test_store_creation_enforces_customer_licence_store_limit(): void
+    {
+        $customer = Customer::factory()->create();
+        Licence::factory()->for($customer)->create(['max_stores' => 1]);
+        Store::factory()->for($customer)->create();
+
+        $this->actingAs(User::factory()->withRole(AdminRole::SuperAdmin)->create())
+            ->from(route('admin.stores.create'))
+            ->post(route('admin.stores.store'), $this->validStoreData($customer))
+            ->assertSessionHasErrors('customer_id');
+
+        $this->assertSame(1, $customer->stores()->count());
+        $this->assertDatabaseMissing('audit_logs', ['action' => 'store.created']);
+    }
+
+    public function test_store_can_be_moved_only_when_target_customer_has_store_capacity(): void
+    {
+        $source = Customer::factory()->create();
+        $target = Customer::factory()->create();
+        Licence::factory()->for($target)->create(['max_stores' => 1]);
+        $store = Store::factory()->for($source)->create();
+        Store::factory()->for($target)->create();
+        $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
+
+        $this->actingAs($admin)->from(route('admin.stores.edit', $store))
+            ->put(route('admin.stores.update', $store), $this->validStoreData($target))
+            ->assertSessionHasErrors('customer_id');
+        $this->assertSame($source->id, $store->fresh()->customer_id);
+    }
+
+    public function test_customer_limit_usage_shows_existing_over_limit_resources_without_disabling_them(): void
+    {
+        $customer = Customer::factory()->create();
+        Licence::factory()->for($customer)->create(['max_stores' => 1, 'max_devices' => 1]);
+        $store = Store::factory()->for($customer)->create(['max_devices' => 5]);
+        Device::factory()->for($store)->count(2)->create();
+        $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
+
+        $this->actingAs($admin)->get(route('admin.customers.show', ['customer' => $customer, 'tab' => 'licence']))
+            ->assertOk()->assertSee('Devices in use')->assertSee('2 / 1')->assertSee('Over limit')
+            ->assertSee('Existing stores and devices remain available');
+        $this->get(route('admin.stores.show', $store))->assertOk()->assertSee('Device capacity');
+        $this->assertDatabaseCount('devices', 2);
+    }
+
     private function validStoreData(Customer $customer, array $overrides = []): array
     {
         return array_merge([

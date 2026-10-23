@@ -13,10 +13,11 @@ Current phase: 17 - Licence Limit Enforcement
 - Phase 14: Customer-level licence administration and audit workflows.
 - Phase 15: Shared RS256 signing service and offline-verifiable signed licence documents.
 - Phase 16: Authenticated per-customer signed licence refresh API.
+- Phase 17: Licence store/device limit enforcement and over-limit reporting.
 
 ## In Progress
 
-- Phase 17 - Licence Limit Enforcement.
+- Phase 18 - App Version Management.
 
 ## Pending
 
@@ -93,8 +94,16 @@ Current phase: 17 - Licence Limit Enforcement
 - Date: 2026-10-23.
 - Implementation: Added GET /api/v1/device/licence, authenticated by the registered device credential and scoped from that device to its customer. It returns the current signed document, clear status and validity/grace dates, or an explicit unlicensed state. Responses are no-store and share the per-device API rate limit. Signing failures return a safe service response.
 - Verification: 4 focused feature tests passed, 21 assertions; full suite passed with 86 tests and 590 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `a0d28f2` - `Add authenticated licence refresh API`.
 - Next: Implement Phase 17 licence limit enforcement.
+
+### Phase 17 - Licence Limit Enforcement
+
+- Date: 2026-10-23.
+- Implementation: Centralized licence-capacity counts; store creation and customer moves now enforce `max_stores` under customer row locks. Device activation enforces per-store and customer-wide `max_devices`, with revoked devices freeing slots. Customer licence and store pages show each applicable limit and usage, including over-limit states; reducing a limit never disables existing stores or devices.
+- Verification: 28 focused tests passed, 207 assertions; full suite passed with 91 tests and 612 assertions; SQLite `migrate:fresh`, changed-file Pint, route listing, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 18 app version management.
 
 ### Build harness and repository guidance
 

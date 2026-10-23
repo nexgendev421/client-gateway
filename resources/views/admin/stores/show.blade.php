@@ -7,7 +7,8 @@
         $statusClass = $store->status->value === 'active' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/10' : 'bg-amber-50 text-amber-800 ring-amber-600/10';
         $latest = $store->latestHealthCheck;
         $healthClass = match ($latest?->status?->value) { 'online' => 'text-emerald-700', 'offline' => 'text-rose-700', default => 'text-slate-500' };
-        $usagePercent = $store->max_devices > 0 ? min(100, (int) round(($store->devices_count / $store->max_devices) * 100)) : 0;
+        $storeDeviceCount = $store->licence_devices_count;
+        $usagePercent = $store->max_devices > 0 ? min(100, (int) round(($storeDeviceCount / $store->max_devices) * 100)) : 0;
     @endphp
     <div class="mb-5"><a href="{{ route('admin.stores.index') }}" class="text-xs font-medium text-blue-700 hover:text-blue-900">← Stores</a></div>
     <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -60,9 +61,12 @@
 
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <div class="flex items-start justify-between gap-3"><div><h2 class="text-sm font-semibold">Device capacity</h2><p class="mt-1 text-xs text-slate-500">Registered devices at this store</p></div><a href="#devices" class="shrink-0 text-xs font-semibold text-blue-700 hover:text-blue-900">View devices</a></div>
-            <p class="mt-5 text-3xl font-semibold tabular-nums tracking-tight">{{ number_format($store->devices_count) }}<span class="ml-1 text-base font-medium text-slate-400">/ {{ number_format($store->max_devices) }}</span></p>
-            <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full {{ $usagePercent >= 90 ? 'bg-amber-500' : 'bg-cyan-500' }}" style="width: {{ $usagePercent }}%"></div></div>
-            <p class="mt-2 text-xs text-slate-500">{{ max(0, $store->max_devices - $store->devices_count) }} device slots available</p>
+            <p class="mt-5 text-3xl font-semibold tabular-nums tracking-tight">{{ number_format($storeDeviceCount) }}<span class="ml-1 text-base font-medium text-slate-400">/ {{ number_format($store->max_devices) }}</span></p>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full {{ $storeDeviceCount >= $store->max_devices ? 'bg-amber-500' : 'bg-cyan-500' }}" style="width: {{ $usagePercent }}%"></div></div>
+            <p class="mt-2 text-xs {{ $storeDeviceCount > $store->max_devices ? 'font-medium text-rose-700' : 'text-slate-500' }}">{{ $storeDeviceCount > $store->max_devices ? 'Over the store limit; existing devices remain registered.' : max(0, $store->max_devices - $storeDeviceCount).' store device slots available' }}</p>
+            @if ($store->customer->licence?->max_devices !== null)
+                <p class="mt-2 border-t border-slate-100 pt-2 text-xs {{ $limitUsage['devices_over_limit'] ? 'font-medium text-rose-700' : 'text-slate-500' }}">Customer licence devices: {{ $limitUsage['devices'] }} / {{ $limitUsage['device_limit'] }}{{ $limitUsage['devices_over_limit'] ? ' · Over limit; new device registrations are blocked.' : '' }}</p>
+            @endif
         </section>
 
         <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
