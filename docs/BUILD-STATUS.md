@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 30 - VPS Deployment Guide
+Current phase: 31 - Safe Deployment Script
 
 ## Completed
 
@@ -24,15 +24,17 @@ Current phase: 30 - VPS Deployment Guide
 - Phase 25: First-run touch-friendly activation page for Windows/Android WebViews, using the existing activation API and an in-memory native provisioning handoff.
 - Phase 26: Added browser security headers, production-only HSTS, safer production session defaults, a quieter `.env.example`, and production security/key rotation guidance. Reviewed existing authentication/MFA, authorization, hashed activation/device credentials, signed-token replay protection, SSRF-safe health checks, rate limits, audit redaction, and safe error handling.
 - Phase 27: Added shared semantic status badges to customer, store, device, activation-code, and licence directories; improved compact mobile navigation scrolling and keyboard focus.
+- Phase 28: Full regression suite passed with 134 tests and 884 assertions. Composer audit reported no advisories; asset build, route list, scheduler list and diff whitespace checks passed.
+- Phase 29: Added production configuration guide for HTTPS/proxy trust, sessions, shared rate-limit cache, database/log permissions, signing keys, scheduler and release caches. `.env.example` remains placeholder-only.
 - Phase 28: Full regression suite passed: 134 tests and 884 assertions. `composer audit` reported no advisories; production asset build, route list, scheduler list, and diff whitespace checks passed.
 
 ## In Progress
 
-- Phase 30 - VPS Deployment Guide (in progress).
+- Phase 31 - Safe Deployment Script (in progress).
 
 ## Pending
 
-- Phases 30-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 31-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -222,3 +224,16 @@ Current phase: 30 - VPS Deployment Guide
 - Implementation: Added [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md), covering production environment values, TLS and proxy trust, sessions/cookies, shared cache/rate limits, database, logs, permissions, signing key loading/rotation, Scheduler, queue guidance, and Laravel release caches. No production secrets were added.
 - Verification: Documentation reviewed against current Laravel configuration and the Phase 26 security controls; `.env.example` remains placeholder-only.
 - Next: Create Phase 30 VPS deployment guide.
+
+### Phase 29 - Production Configuration
+
+- Date: 2026-10-23.
+- Implementation: Added [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md) with production settings and host-specific values kept as placeholders; no secrets or customer credentials.
+- Next: Create Phase 30 HestiaCP VPS deployment guide.
+
+### Phase 30 - VPS Deployment Guide
+
+- Date: 2026-10-23.
+- Implementation: Added [PRODUCTION-DEPLOYMENT.md](PRODUCTION-DEPLOYMENT.md) for Ubuntu/HestiaCP, GitHub read-only deploy access, private checkout and Laravel public root, production setup/admin MFA, TLS/Cloudflare, Scheduler, monitoring, safe updates and rollback. It contains no real credentials.
+- Verification: Reviewed documented commands against repository scripts, admin provisioning command, scheduler and architecture; documentation whitespace check passed.
+- Next: Implement Phase 31 safe deployment script.
