@@ -119,6 +119,10 @@
             <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 class="text-sm font-semibold">Customer licence</h2>
                 @if ($customer->licence)
+                    <div class="mt-3 flex flex-wrap justify-end gap-2">
+                        @can('view', $customer->licence)<a href="{{ route('admin.licences.show', $customer->licence) }}" class="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">View licence</a>@endcan
+                        @can('update', $customer->licence)<a href="{{ route('admin.licences.edit', $customer->licence) }}" class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-800 hover:bg-blue-100">Edit licence</a>@endcan
+                    </div>
                     <dl class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                         <div><dt class="text-xs text-slate-500">Plan</dt><dd class="mt-1 text-sm font-medium">{{ $customer->licence->plan }}</dd></div>
                         <div><dt class="text-xs text-slate-500">Status</dt><dd class="mt-1 text-sm font-medium capitalize">{{ str_replace('_', ' ', $customer->licence->status->value) }}</dd></div>
@@ -129,6 +133,7 @@
                     </dl>
                 @else
                     <p class="mt-4 rounded-lg bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">No licence is associated with this customer.</p>
+                    @can('create', \App\Models\Licence::class)<a href="{{ route('admin.licences.create', ['customer_id' => $customer->id]) }}" class="mt-4 inline-flex rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800">Create licence</a>@endcan
                 @endif
             </section>
         @elseif ($tab === 'activity')

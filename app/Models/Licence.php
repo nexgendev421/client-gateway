@@ -11,7 +11,7 @@ class Licence extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['customer_id', 'plan', 'status', 'starts_at', 'valid_until', 'grace_until', 'max_stores', 'max_devices', 'metadata'];
+    protected $fillable = ['customer_id', 'plan', 'plan_code', 'status', 'starts_at', 'valid_until', 'grace_until', 'max_stores', 'max_devices', 'metadata', 'internal_notes'];
 
     protected function casts(): array
     {

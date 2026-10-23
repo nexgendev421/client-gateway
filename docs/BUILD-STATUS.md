@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 14 - Licensing Foundation
+Current phase: 15 - Signed Licence Tokens
 
 ## Completed
 
@@ -10,14 +10,15 @@ Current phase: 14 - Licensing Foundation
 - Phase 11: Device directory and lifecycle management.
 - Phase 12: Hashed device credentials with one-time provisioning exchange, authentication middleware, rotation, and revocation.
 - Phase 13: Authenticated device heartbeat and config APIs.
+- Phase 14: Customer-level licence administration and audit workflows.
 
 ## In Progress
 
-- Phase 14 - Licensing Foundation.
+- Phase 15 - Signed Licence Tokens.
 
 ## Pending
 
-- Phases 15-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 16-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -51,7 +52,7 @@ Current phase: 14 - Licensing Foundation
 - Verification: 6 focused feature tests passed, 49 assertions; full suite passed with 63 tests and 398 assertions; targeted Pint, route-list inspection, and `git diff --check` passed.
 - Commit: `81bd0ef` - `Add device administration workflows`.
 - Known risks: “Offline” uses a temporary 24-hour last-seen threshold until Phase 13 heartbeat and Phase 24 settings define cadence.
-- Next: Implement Phase 13 heartbeat and config APIs.
+- Next: Implement Phase 12 device credentials.
 
 ### Phase 12 - Device Credential System
 
@@ -67,9 +68,18 @@ Current phase: 14 - Licensing Foundation
 - Date: 2026-10-23.
 - Implementation: Added authenticated, per-device throttled heartbeat and config endpoints. Heartbeats validate safe app/OS version strings and registered platform, then update last-seen time, request IP, and versions. Config returns assigned business/store/endpoint and device details, minimal inherited licence data, platform-specific minimum/recommended versions, and an optional sanitized maintenance notice from whitelisted setting keys. API responses are no-store; no POS transactional or customer product data is collected.
 - Verification: 4 focused feature tests passed, 34 assertions; full suite passed with 73 tests and 477 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
-- Commit: Pending.
+- Commit: `62ceac0` - `Add device heartbeat and config APIs`.
 - Known limits: Minimum/recommended version settings are read-only until Phase 20/24 administration. Device offline threshold remains 24 hours for current directory filters.
 - Next: Implement Phase 14 licensing administration foundation.
+
+### Phase 14 - Licensing Foundation
+
+- Date: 2026-10-23.
+- Implementation: Added customer-level licence administration with plan code/name, status, date window, grace, store/device limits, JSON feature entitlements, internal notes, list/detail/edit/create pages, customer detail links, and audited expiry/status operations. Support and read-only roles can view; only super admins manage. Feature metadata rejects credential/secret key names, audit snapshots omit feature contents, and free-text reasons redact common token/activation-code formats.
+- Verification: 5 focused feature tests passed, 58 assertions; full suite passed with 78 tests and 535 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
+- Commit: Pending.
+- Scope note: Stripe and signed licence token issuance are not included here. Existing device activation continues to enforce licence status/expiry and device limits; store-limit enforcement is Phase 17.
+- Next: Implement Phase 15 signed offline-verifiable licence tokens.
 
 ### Build harness and repository guidance
 

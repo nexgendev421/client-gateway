@@ -9,7 +9,6 @@ class AdminSectionController extends Controller
 {
     private const SECTIONS = [
         'activation-codes' => 'Activation Codes',
-        'licences' => 'Licences',
         'audit-logs' => 'Audit Logs',
         'admin-users' => 'Admin Users',
         'settings' => 'Settings',

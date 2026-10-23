@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminSectionController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeviceController;
+use App\Http\Controllers\Admin\LicenceController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -57,8 +58,16 @@ Route::middleware(['auth', EnsureAdminIsActive::class])->group(function (): void
     Route::post('/admin/devices/{device}/disable', [DeviceController::class, 'disable'])->whereNumber('device')->name('admin.devices.disable');
     Route::post('/admin/devices/{device}/reactivate', [DeviceController::class, 'reactivate'])->whereNumber('device')->name('admin.devices.reactivate');
     Route::post('/admin/devices/{device}/revoke', [DeviceController::class, 'revoke'])->whereNumber('device')->name('admin.devices.revoke');
+    Route::get('/admin/licences', [LicenceController::class, 'index'])->name('admin.licences.index');
+    Route::get('/admin/licences/create', [LicenceController::class, 'create'])->name('admin.licences.create');
+    Route::post('/admin/licences', [LicenceController::class, 'store'])->name('admin.licences.store');
+    Route::get('/admin/licences/{licence}/edit', [LicenceController::class, 'edit'])->whereNumber('licence')->name('admin.licences.edit');
+    Route::put('/admin/licences/{licence}', [LicenceController::class, 'update'])->whereNumber('licence')->name('admin.licences.update');
+    Route::post('/admin/licences/{licence}/extend', [LicenceController::class, 'extend'])->whereNumber('licence')->name('admin.licences.extend');
+    Route::post('/admin/licences/{licence}/status/{state}', [LicenceController::class, 'transition'])->whereNumber('licence')->whereIn('state', ['past-due', 'grace', 'active', 'restricted', 'suspended', 'cancelled'])->name('admin.licences.transition');
+    Route::get('/admin/licences/{licence}', [LicenceController::class, 'show'])->whereNumber('licence')->name('admin.licences.show');
     Route::get('/admin/{section}', AdminSectionController::class)
-        ->whereIn('section', ['customers', 'stores', 'activation-codes', 'licences', 'system-health', 'audit-logs', 'admin-users', 'settings'])
+        ->whereIn('section', ['customers', 'stores', 'activation-codes', 'system-health', 'audit-logs', 'admin-users', 'settings'])
         ->name('admin.section');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

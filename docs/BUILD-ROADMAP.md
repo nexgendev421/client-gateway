@@ -248,7 +248,7 @@ Rate limit.
 Add tests.
 
 ==================================================
-## Phase 14 — LICENSING FOUNDATION — IN PROGRESS
+## Phase 14 — LICENSING FOUNDATION — COMPLETED
 ==================================================
 
 Implement customer-level licensing.
@@ -304,7 +304,7 @@ No Stripe yet.
 Add tests.
 
 ==================================================
-## Phase 15 — SIGNED LICENCE TOKENS — PENDING
+## Phase 15 — SIGNED LICENCE TOKENS — IN PROGRESS
 ==================================================
 
 Use asymmetric signing infrastructure to implement signed licence documents.
