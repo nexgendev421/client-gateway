@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 31 - Safe Deployment Script
+Current phase: 32 - Backup and Restore
 
 ## Completed
 
@@ -26,15 +26,16 @@ Current phase: 31 - Safe Deployment Script
 - Phase 27: Added shared semantic status badges to customer, store, device, activation-code, and licence directories; improved compact mobile navigation scrolling and keyboard focus.
 - Phase 28: Full regression suite passed with 134 tests and 884 assertions. Composer audit reported no advisories; asset build, route list, scheduler list and diff whitespace checks passed.
 - Phase 29: Added production configuration guide for HTTPS/proxy trust, sessions, shared rate-limit cache, database/log permissions, signing keys, scheduler and release caches. `.env.example` remains placeholder-only.
+- Phase 30: Added Ubuntu/HestiaCP deployment procedure including isolated Laravel public root, production setup, TLS/Cloudflare, Scheduler, monitoring, releases and rollback.
 - Phase 28: Full regression suite passed: 134 tests and 884 assertions. `composer audit` reported no advisories; production asset build, route list, scheduler list, and diff whitespace checks passed.
 
 ## In Progress
 
-- Phase 31 - Safe Deployment Script (in progress).
+- Phase 32 - Backup and Restore (in progress).
 
 ## Pending
 
-- Phases 31-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 32-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -237,3 +238,16 @@ Current phase: 31 - Safe Deployment Script
 - Implementation: Added [PRODUCTION-DEPLOYMENT.md](PRODUCTION-DEPLOYMENT.md) for Ubuntu/HestiaCP, GitHub read-only deploy access, private checkout and Laravel public root, production setup/admin MFA, TLS/Cloudflare, Scheduler, monitoring, safe updates and rollback. It contains no real credentials.
 - Verification: Reviewed documented commands against repository scripts, admin provisioning command, scheduler and architecture; documentation whitespace check passed.
 - Next: Implement Phase 31 safe deployment script.
+
+### Phase 30 - VPS Deployment Guide
+
+- Date: 2026-10-23.
+- Implementation: Added HestiaCP/Ubuntu deployment guide with private clone, `public/` document root, least-privilege DB/deploy access, protected secrets/signing keys, TLS/Cloudflare trust, admin MFA, scheduled jobs, monitoring and rollback.
+- Next: Implement Phase 31 safe deployment script.
+
+### Phase 31 - Safe Deployment Script
+
+- Date: 2026-10-23.
+- Implementation: Added `scripts/deploy.sh`: verifies app checkout, `.env`/APP_KEY, branch, clean tree and remote history; only fast-forwards; uses maintenance mode; installs Composer/npm dependencies, builds assets, runs forced migrations, rebuilds caches and requests queue restart. It never generates/replaces secrets, resets data or force overwrites changes. Deployment guide documents prerequisites, interruption and recovery.
+- Verification: `bash -n scripts/deploy.sh` and `git diff --check` passed. No production deployment was performed.
+- Next: Create Phase 32 backup/restore plan.

@@ -89,6 +89,17 @@ Monitor HTTPS availability, Laravel/PHP-FPM and web server errors, disk space, d
 
 ## 8. Safe application updates
 
+The repository includes `scripts/deploy.sh` for a deliberately narrow fast-forward release flow. Run it from its checked-out repository using the Hestia web user after a backup and a reviewed release has been merged to `origin/main`:
+
+```sh
+cd /home/WEB_USER/apps/router
+bash scripts/deploy.sh
+```
+
+The script requires Bash, Git, PHP/Artisan, Composer, Node.js/npm, a production `.env`, a populated `APP_KEY`, and a clean checkout on the configured branch (`DEPLOY_BRANCH=main` by default). It fetches the configured `origin`, refuses diverged history, fast-forwards only, enables maintenance mode, installs production Composer dependencies, builds assets, runs migrations, rebuilds caches, requests queue worker restart, and exits maintenance mode. It does not create or rewrite `.env`, generate app or signing keys, reset the database, or push code. It may briefly interrupt activation/control-plane requests during the release. Existing POS sales continue directly against their customer servers.
+
+This is not a universal zero-downtime release manager. It assumes deployment dependencies exist on the host and that the release checkout is disposable and clean. It does not roll back database migrations or replace backups and release review. If it stops after entering maintenance mode, its exit handler tries to restore service; verify with `php artisan up` and inspect the reported failure before retrying.
+
 1. Review and test the release in CI/staging; inspect migrations for destructive changes.
 2. Back up the database and current release before deployment.
 3. Confirm a clean working tree and expected branch/tag. Never discard server changes with `git reset --hard`, force-pull, or clean commands.
