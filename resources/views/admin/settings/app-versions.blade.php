@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="mb-6">
+        <div class="mb-3"><a href="{{ route('admin.settings.index') }}" class="text-xs font-medium text-blue-700 hover:text-blue-900">Router settings</a></div>
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-blue-700">Router administration · Settings</p>
         <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">App version management</h1>
         <p class="mt-1 text-sm text-slate-500">Publish current client versions and update guidance for Windows and Android devices.</p>

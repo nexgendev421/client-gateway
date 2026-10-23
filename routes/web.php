@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeviceController;
 use App\Http\Controllers\Admin\LicenceController;
 use App\Http\Controllers\Admin\MfaController;
+use App\Http\Controllers\Admin\RouterSettingsController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SystemHealthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -69,7 +70,9 @@ Route::middleware(['auth', EnsureAdminIsActive::class, EnsureAdminMfaIsVerified:
     Route::get('/admin/stores/{store}', [StoreController::class, 'show'])->whereNumber('store')->name('admin.stores.show');
     Route::get('/admin/system-health', SystemHealthController::class)->name('admin.system-health.index');
     Route::get('/admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
-    Route::get('/admin/settings', [AppVersionController::class, 'edit'])->name('admin.settings.app-versions');
+    Route::get('/admin/settings', [RouterSettingsController::class, 'edit'])->name('admin.settings.index');
+    Route::put('/admin/settings', [RouterSettingsController::class, 'update'])->name('admin.settings.update');
+    Route::get('/admin/settings/app-versions', [AppVersionController::class, 'edit'])->name('admin.settings.app-versions');
     Route::put('/admin/settings/app-versions', [AppVersionController::class, 'update'])->name('admin.settings.app-versions.update');
     Route::get('/admin/devices', [DeviceController::class, 'index'])->name('admin.devices.index');
     Route::get('/admin/devices/{device}', [DeviceController::class, 'show'])->whereNumber('device')->name('admin.devices.show');
@@ -94,7 +97,7 @@ Route::middleware(['auth', EnsureAdminIsActive::class, EnsureAdminMfaIsVerified:
     Route::post('/admin/admin-users/{adminUser}/disable', [AdminUserController::class, 'disable'])->whereNumber('adminUser')->name('admin.admin-users.disable');
     Route::post('/admin/admin-users/{adminUser}/enable', [AdminUserController::class, 'enable'])->whereNumber('adminUser')->name('admin.admin-users.enable');
     Route::get('/admin/{section}', AdminSectionController::class)
-        ->whereIn('section', ['customers', 'stores', 'activation-codes', 'system-health', 'admin-users', 'settings'])
+        ->whereIn('section', ['customers', 'stores', 'activation-codes', 'system-health', 'admin-users'])
         ->name('admin.section');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

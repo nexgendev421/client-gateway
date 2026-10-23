@@ -7,6 +7,7 @@ use App\Http\Requests\ActivationCodeRequest;
 use App\Models\ActivationCode;
 use App\Models\Store;
 use App\Services\ActivationCodeService;
+use App\Services\RouterSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,21 +56,21 @@ class ActivationCodeController extends Controller
         return view('admin.activation-codes.store', compact('store', 'codes'));
     }
 
-    public function create(Store $store): View
+    public function create(Store $store, RouterSettings $settings): View
     {
         $this->authorize('generateActivationCode', $store);
 
-        return view('admin.activation-codes.create', compact('store'));
+        return view('admin.activation-codes.create', ['store' => $store, 'defaults' => $settings->all()]);
     }
 
-    public function generate(ActivationCodeRequest $request, Store $store, ActivationCodeService $service): Response
+    public function generate(ActivationCodeRequest $request, Store $store, ActivationCodeService $service, RouterSettings $settings): Response
     {
         $this->authorize('generateActivationCode', $store);
         $data = $request->validated();
         $generated = $service->generate(
             $store,
             (int) $data['expires_in_hours'],
-            (int) ($data['max_uses'] ?? 1),
+            (int) ($data['max_uses'] ?? $settings->all()['default_activation_max_uses']),
             $data['intended_device_name'] ?? null,
             (int) $request->user()->getKey(),
             $request->ip(),

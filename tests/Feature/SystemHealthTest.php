@@ -36,7 +36,7 @@ class SystemHealthTest extends TestCase
             ->assertSee('Not checked')
             ->assertSee('42 ms')
             ->assertSee('The endpoint request timed out.')
-            ->assertSee('Automated endpoint checks run every five minutes');
+            ->assertSee('Automated endpoint checks run every 5 minutes');
     }
 
     public function test_system_health_requires_authenticated_admin(): void

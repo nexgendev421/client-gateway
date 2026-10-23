@@ -11,15 +11,15 @@
             <div>
                 <label for="expires_in_hours" class="mb-1.5 block text-sm font-medium text-slate-700">Expires after</label>
                 <select id="expires_in_hours" name="expires_in_hours" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
-                    <option value="1" @selected(old('expires_in_hours', '24') == '1')>1 hour</option>
-                    <option value="24" @selected(old('expires_in_hours', '24') == '24')>24 hours</option>
-                    <option value="168" @selected(old('expires_in_hours') == '168')>7 days</option>
+                    <option value="1" @selected(old('expires_in_hours', $defaults['default_activation_expiry_hours']) == '1')>1 hour</option>
+                    <option value="24" @selected(old('expires_in_hours', $defaults['default_activation_expiry_hours']) == '24')>24 hours</option>
+                    <option value="168" @selected(old('expires_in_hours', $defaults['default_activation_expiry_hours']) == '168')>7 days</option>
                 </select>
                 @error('expires_in_hours')<p class="mt-1 text-xs text-rose-700">{{ $message }}</p>@enderror
             </div>
             <div>
                 <label for="max_uses" class="mb-1.5 block text-sm font-medium text-slate-700">Maximum uses</label>
-                <input id="max_uses" name="max_uses" type="number" min="1" max="100" value="{{ old('max_uses', 1) }}" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
+                <input id="max_uses" name="max_uses" type="number" min="1" max="100" value="{{ old('max_uses', $defaults['default_activation_max_uses']) }}" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100">
                 <p class="mt-1 text-xs text-slate-500">Enter a value from 1 to 100.</p>
                 @error('max_uses')<p class="mt-1 text-xs text-rose-700">{{ $message }}</p>@enderror
             </div>

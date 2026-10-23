@@ -7,6 +7,7 @@ use App\Enums\LicenceStatus;
 use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Licence;
+use App\Models\SystemSetting;
 use App\Models\User;
 use App\Services\AsymmetricJwtSigner;
 use App\Services\LicenceTokenIssuer;
@@ -174,6 +175,27 @@ class LicenceAdministrationTest extends TestCase
         $auditReason = json_encode(AuditLog::query()->where('action', 'licence.restored_active')->value('metadata'));
         $this->assertStringNotContainsString('sypd_', $auditReason);
         $this->assertStringNotContainsString('1234-5678', $auditReason);
+    }
+
+    public function test_default_grace_period_is_applied_when_no_custom_end_date_is_entered(): void
+    {
+        $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
+        $licence = Licence::factory()->create([
+            'status' => LicenceStatus::PastDue,
+            'valid_until' => now()->addDays(2),
+        ]);
+        SystemSetting::query()->create([
+            'key' => 'router_settings',
+            'value' => ['default_licence_grace_days' => 14],
+        ]);
+
+        $this->actingAs($admin)->post(route('admin.licences.transition', [$licence, 'grace']), [
+            'reason' => 'Temporary payment extension',
+        ])->assertRedirect(route('admin.licences.show', $licence));
+
+        $expected = $licence->valid_until->copy()->addDays(14);
+        $this->assertTrue($licence->fresh()->grace_until->equalTo($expected));
+        $this->assertDatabaseHas('audit_logs', ['action' => 'licence.grace_configured', 'actor_id' => $admin->id]);
     }
 
     public function test_emergency_extension_supports_bounded_day_choices_and_custom_expiry_validation(): void

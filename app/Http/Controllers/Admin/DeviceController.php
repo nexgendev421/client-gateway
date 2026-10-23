@@ -8,6 +8,7 @@ use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Device;
 use App\Models\Store;
+use App\Services\RouterSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ use Illuminate\View\View;
 
 class DeviceController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, RouterSettings $settings): View
     {
         $this->authorize('viewAny', Device::class);
         $filters = $request->validate([
@@ -29,7 +30,8 @@ class DeviceController extends Controller
             'seen' => ['nullable', Rule::in(['recent', 'offline'])],
         ]);
         $search = trim((string) ($filters['q'] ?? ''));
-        $offlineSince = now()->subDay();
+        $offlineAfterMinutes = $settings->heartbeatExpectedIntervalMinutes() * 3;
+        $offlineSince = now()->subMinutes($offlineAfterMinutes);
 
         $devices = Device::query()->with(['store.customer'])
             ->when($search !== '', function (Builder $query) use ($search): void {
@@ -53,7 +55,7 @@ class DeviceController extends Controller
         $customers = Customer::query()->orderBy('business_name')->get(['id', 'business_name', 'trading_name']);
         $stores = Store::query()->with('customer')->orderBy('name')->get(['id', 'customer_id', 'name', 'store_code']);
 
-        return view('admin.devices.index', compact('devices', 'filters', 'search', 'customers', 'stores'));
+        return view('admin.devices.index', compact('devices', 'filters', 'search', 'customers', 'stores', 'offlineAfterMinutes'));
     }
 
     public function show(Device $device): View

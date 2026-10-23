@@ -8,6 +8,7 @@ use App\Http\Requests\LicenceRequest;
 use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Licence;
+use App\Services\RouterSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -73,14 +74,16 @@ class LicenceController extends Controller
         return redirect()->route('admin.licences.show', $licence)->with('status', 'Licence created.');
     }
 
-    public function show(Licence $licence): View
+    public function show(Licence $licence, RouterSettings $settings): View
     {
         $this->authorize('view', $licence);
         $licence->load('customer');
         $activity = AuditLog::query()->with('actor')->where('resource_type', Licence::class)
             ->where('resource_id', (string) $licence->getKey())->orderByDesc('occurred_at')->limit(30)->get();
 
-        return view('admin.licences.show', compact('licence', 'activity'));
+        return view('admin.licences.show', compact('licence', 'activity') + [
+            'defaultGraceDays' => $settings->all()['default_licence_grace_days'],
+        ]);
     }
 
     public function edit(Licence $licence): View
@@ -152,7 +155,7 @@ class LicenceController extends Controller
         return redirect()->route('admin.licences.show', $licence)->with('status', 'Licence expiry extended.');
     }
 
-    public function transition(Request $request, Licence $licence, string $state): RedirectResponse
+    public function transition(Request $request, Licence $licence, string $state, RouterSettings $settings): RedirectResponse
     {
         $this->authorize('changeStatus', $licence);
         $targets = [
@@ -167,18 +170,25 @@ class LicenceController extends Controller
         $target = $targets[$state];
         $rules = ['reason' => ['required', 'string', 'min:3', 'max:500']];
         if ($target === LicenceStatus::Grace) {
-            $rules['grace_until'] = ['required', 'date', 'after:'.$licence->valid_until->format('Y-m-d H:i:s')];
+            $rules['grace_until'] = ['nullable', 'date'];
         }
         $data = $request->validate($rules);
 
-        DB::transaction(function () use ($licence, $request, $data, $target): void {
+        DB::transaction(function () use ($licence, $request, $data, $target, $settings): void {
             $locked = Licence::query()->lockForUpdate()->findOrFail($licence->getKey());
             abort_unless($locked->status !== $target, 409);
             if ($target === LicenceStatus::Active && $locked->valid_until->isPast()) {
                 throw ValidationException::withMessages(['reason' => 'Extend the licence expiry before restoring active status.']);
             }
             if ($target === LicenceStatus::Grace) {
-                $locked->grace_until = $data['grace_until'];
+                $latestBase = $locked->valid_until->isFuture() ? $locked->valid_until : now();
+                $graceUntil = isset($data['grace_until'])
+                    ? Carbon::parse($data['grace_until'])
+                    : $latestBase->copy()->addDays($settings->all()['default_licence_grace_days']);
+                if ($graceUntil->lessThanOrEqualTo($latestBase)) {
+                    throw ValidationException::withMessages(['grace_until' => 'The grace period must end after the licence expiry or today, whichever is later.']);
+                }
+                $locked->grace_until = $graceUntil;
             }
             $oldStatus = $locked->status;
             $locked->status = $target;

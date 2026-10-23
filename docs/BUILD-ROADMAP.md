@@ -620,7 +620,7 @@ Build searchable/filterable Audit Logs UI.
 Tests.
 
 ==================================================
-## Phase 24 â€” CENTRAL SETTINGS â€” PENDING
+## Phase 24 â€” CENTRAL SETTINGS â€” COMPLETE
 ==================================================
 
 Implement safe non-secret settings:

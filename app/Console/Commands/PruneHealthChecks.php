@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\HealthCheck;
+use App\Services\RouterSettings;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -12,9 +13,9 @@ class PruneHealthChecks extends Command
 
     protected $description = 'Remove old POS health history while retaining each store’s latest result';
 
-    public function handle(): int
+    public function handle(RouterSettings $settings): int
     {
-        $retentionDays = max(1, (int) config('router.health_checks.retention_days', 30));
+        $retentionDays = $settings->healthHistoryRetentionDays();
         $latestPerStore = HealthCheck::query()->selectRaw('MAX(id)')->groupBy('store_id');
         $deleted = DB::table('health_checks')
             ->where('checked_at', '<', now()->subDays($retentionDays))

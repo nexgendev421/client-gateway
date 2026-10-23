@@ -6,11 +6,12 @@ use App\Enums\HealthCheckStatus;
 use App\Http\Controllers\Controller;
 use App\Models\HealthCheck;
 use App\Models\Store;
+use App\Services\RouterSettings;
 use Illuminate\View\View;
 
 class SystemHealthController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(RouterSettings $settings): View
     {
         $this->authorize('viewAny', Store::class);
 
@@ -20,6 +21,8 @@ class SystemHealthController extends Controller
         $offlineCount = Store::query()->whereHas('latestHealthCheck', fn ($query) => $query->where('status', HealthCheckStatus::Offline))->count();
         $uncheckedCount = Store::query()->whereDoesntHave('healthChecks')->count();
 
-        return view('admin.system-health.index', compact('stores', 'recentChecks', 'onlineCount', 'offlineCount', 'uncheckedCount'));
+        return view('admin.system-health.index', compact('stores', 'recentChecks', 'onlineCount', 'offlineCount', 'uncheckedCount') + [
+            'healthCheckFrequencyMinutes' => $settings->healthCheckFrequencyMinutes(),
+        ]);
     }
 }

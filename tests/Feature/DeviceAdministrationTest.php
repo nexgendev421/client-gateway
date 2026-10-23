@@ -32,7 +32,7 @@ class DeviceAdministrationTest extends TestCase
             'name' => 'Front Till',
             'public_id' => 'SYP-FRONT-001',
             'platform' => 'windows',
-            'last_seen_at' => now()->subHour(),
+            'last_seen_at' => now()->subMinutes(5),
         ]);
         Device::factory()->create(['name' => 'Other Android', 'platform' => 'android', 'status' => DeviceStatus::Disabled]);
         $this->assertDatabaseHas('devices', ['id' => $device->id, 'public_id' => 'SYP-FRONT-001', 'store_id' => $store->id]);

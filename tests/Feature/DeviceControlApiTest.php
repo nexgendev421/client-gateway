@@ -86,7 +86,7 @@ class DeviceControlApiTest extends TestCase
             ->assertJsonPath('app_versions.mandatory_update', false)
             ->assertJsonPath('maintenance_notice', 'Scheduled maintenance tonight');
 
-        $this->assertSame(['business_name', 'store_name', 'endpoint_url', 'device', 'licence', 'app_versions', 'maintenance_notice'], array_keys($response->json()));
+        $this->assertSame(['business_name', 'store_name', 'endpoint_url', 'device', 'licence', 'app_versions', 'heartbeat_expected_interval_minutes', 'support_contact', 'maintenance_notice'], array_keys($response->json()));
         $this->assertArrayNotHasKey('id', $response->json('device'));
         $this->assertArrayNotHasKey('token', $response->json());
         $this->assertNotNull($license->fresh());

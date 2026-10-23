@@ -6,7 +6,7 @@
     <div class="mb-6">
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-blue-700">Router administration</p>
         <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">System Health</h1>
-        <p class="mt-1 text-sm text-slate-500">Automated endpoint checks run every five minutes; admins can also run a manual check from a store page.</p>
+        <p class="mt-1 text-sm text-slate-500">Automated endpoint checks run every {{ $healthCheckFrequencyMinutes }} minutes; admins can also run a manual check from a store page.</p>
     </div>
 
     <div class="mb-5 grid gap-4 sm:grid-cols-3">

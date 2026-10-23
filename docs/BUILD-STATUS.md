@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 24 - Central Settings
+Current phase: 25 - Device Activation UI
 
 ## Completed
 
@@ -20,14 +20,15 @@ Current phase: 24 - Central Settings
 - Phase 21: Admin user lifecycle, role-based operational access, audit events, and last-super-admin protection.
 - Phase 22: Encrypted TOTP setup and sign-in challenge, hashed one-use recovery codes, mandatory super-admin MFA, throttling, account security screens, and recovery documentation.
 - Phase 23: Consistent sign-in/security audit events, searchable and filterable super-admin audit log, recursive secret/token redaction, and before/after store endpoint host snapshots.
+- Phase 24: Central non-secret settings administration for activation defaults, health frequency/retention, heartbeat expectations, licence grace, support contact and maintenance notices; existing app-version management remains the version editor.
 
 ## In Progress
 
-- Phase 24 - Central Settings (in progress).
+- Phase 25 - Device Activation UI (in progress).
 
 ## Pending
 
-- Phases 25-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 26-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -160,6 +161,13 @@ Current phase: 24 - Central Settings
 - Verification: Audit administration tests passed (4 tests, 21 assertions); Store administration tests passed (17 tests, 125 assertions); full suite passed with 120 tests and 806 assertions. Changed-file Pint, audit route listing, and `git diff --check` passed.
 - Commit: `2de270c` - `Complete audit log administration`.
 - Next: Implement Phase 24 central settings.
+### Phase 24 - Central Settings
+
+- Date: 2026-10-23.
+- Implementation: Added a super-admin central settings page and validated non-secret settings storage. Activation defaults prefill new code forms; the scheduled health runner applies a configurable interval, history pruning reads configurable retention, and device offline filtering uses three times the expected heartbeat interval. Device config now includes heartbeat interval, support contact, and a central maintenance notice. Grace transitions use the configured default unless a custom end date is supplied. Windows/Android version rules continue to use the existing app-version page, linked from central settings.
+- Verification: Focused Router Settings, health monitoring, activation, licence, device, app-version, and System Health tests passed; full suite passed with 129 tests and 850 assertions. Changed-file Pint, settings route listing, scheduled task listing, and `git diff --check` passed.
+- Commit: Pending.
+- Next: Implement Phase 25 device activation UI.
 ### Build harness and repository guidance
 
 - Date: 2026-10-23.

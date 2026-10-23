@@ -15,7 +15,7 @@ class DeviceConfigurationService
         'maintenance_notice',
     ];
 
-    public function __construct(private readonly AppVersionSettings $appVersions) {}
+    public function __construct(private readonly AppVersionSettings $appVersions, private readonly RouterSettings $routerSettings) {}
 
     /** @return array<string, mixed> */
     public function forDevice(Device $device): array
@@ -32,6 +32,7 @@ class DeviceConfigurationService
             ],
         );
         $platform = $device->platform->value;
+        $routerSettings = $this->routerSettings->all();
 
         return [
             'business_name' => $customer->trading_name ?: $customer->business_name,
@@ -49,7 +50,13 @@ class DeviceConfigurationService
                 'grace_until' => $licence->grace_until?->toIso8601String(),
             ],
             'app_versions' => ['platform' => $platform] + $this->appVersions->forPlatform($platform),
-            'maintenance_notice' => $this->maintenanceNotice($settings->get('maintenance_notice')),
+            'heartbeat_expected_interval_minutes' => $routerSettings['heartbeat_expected_interval_minutes'],
+            'support_contact' => [
+                'email' => $routerSettings['support_email'],
+                'phone' => $routerSettings['support_phone'],
+            ],
+            'maintenance_notice' => $routerSettings['maintenance_notice']
+                ?? ($this->routerSettings->hasCentralSettings() ? null : $this->maintenanceNotice($settings->get('maintenance_notice'))),
         ];
     }
 
