@@ -1,6 +1,6 @@
 # Build Status
 
-Current phase: 27 - UI Polish
+Current phase: 30 - VPS Deployment Guide
 
 ## Completed
 
@@ -23,14 +23,16 @@ Current phase: 27 - UI Polish
 - Phase 24: Central non-secret settings administration for activation defaults, health frequency/retention, heartbeat expectations, licence grace, support contact and maintenance notices; existing app-version management remains the version editor.
 - Phase 25: First-run touch-friendly activation page for Windows/Android WebViews, using the existing activation API and an in-memory native provisioning handoff.
 - Phase 26: Added browser security headers, production-only HSTS, safer production session defaults, a quieter `.env.example`, and production security/key rotation guidance. Reviewed existing authentication/MFA, authorization, hashed activation/device credentials, signed-token replay protection, SSRF-safe health checks, rate limits, audit redaction, and safe error handling.
+- Phase 27: Added shared semantic status badges to customer, store, device, activation-code, and licence directories; improved compact mobile navigation scrolling and keyboard focus.
+- Phase 28: Full regression suite passed: 134 tests and 884 assertions. `composer audit` reported no advisories; production asset build, route list, scheduler list, and diff whitespace checks passed.
 
 ## In Progress
 
-- Phase 28 - Full Test Pass (in progress).
+- Phase 30 - VPS Deployment Guide (in progress).
 
 ## Pending
 
-- Phases 28-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 30-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -197,4 +199,26 @@ Current phase: 27 - UI Polish
 - Date: 2026-10-23.
 - Implementation: Added a shared status badge with consistent distinct colours for active/online, grace/past due, suspended/restricted/offline, revoked/expired, and used states. Applied it across customer, store, device, activation-code, and licence lists. Improved mobile navigation snapping and keyboard focus visibility.
 - Verification: Full suite passed with 134 tests and 884 assertions. `npm run build`, Pint, and `git diff --check` passed.
+- Commit: `f23997e` - `Polish Router admin status and navigation UI`.
 - Next: Perform Phase 28 full test pass.
+
+### Phase 28 - Full Test Pass
+
+- Date: 2026-10-23.
+- Verification: Full PHPUnit suite passed: 134 tests, 884 assertions, zero failures. `composer audit` found no advisories. Production Vite build, route listing, scheduled-task listing, and `git diff --check` passed.
+- Unresolved: Production values and host-level TLS/proxy configuration remain deployment-specific and are documented for the operator.
+- Next: Prepare Phase 29 production configuration guidance.
+
+### Phase 28 - Full Test Pass
+
+- Date: 2026-10-23.
+- Verification: Full suite passed with 134 tests and 884 assertions. `composer audit` reported no security advisories; production Vite build, route listing, scheduled-task listing, and `git diff --check` passed.
+- Open deployment considerations: Public hostname, TLS, reverse proxy addresses, and secrets are environment-specific.
+- Next: Complete production configuration guidance.
+
+### Phase 29 - Production Configuration
+
+- Date: 2026-10-23.
+- Implementation: Added [PRODUCTION-CONFIGURATION.md](PRODUCTION-CONFIGURATION.md), covering production environment values, TLS and proxy trust, sessions/cookies, shared cache/rate limits, database, logs, permissions, signing key loading/rotation, Scheduler, queue guidance, and Laravel release caches. No production secrets were added.
+- Verification: Documentation reviewed against current Laravel configuration and the Phase 26 security controls; `.env.example` remains placeholder-only.
+- Next: Create Phase 30 VPS deployment guide.
