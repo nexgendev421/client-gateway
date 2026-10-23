@@ -1,6 +1,6 @@
 ﻿# Build Status
 
-Current phase: 12 - Device Credential System
+Current phase: 13 - Device Heartbeat + Config API
 
 ## Completed
 
@@ -8,14 +8,15 @@ Current phase: 12 - Device Credential System
 - Phase 9: Public device activation API.
 - Phase 10: Signed provisioning token issuer, verifier contract, and key operations documentation.
 - Phase 11: Device directory and lifecycle management.
+- Phase 12: Hashed device credentials with one-time provisioning exchange, authentication middleware, rotation, and revocation.
 
 ## In Progress
 
-- Phase 12 - Device Credential System.
+- Phase 13 - Device Heartbeat + Config API.
 
 ## Pending
 
-- Phases 13-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
+- Phases 14-33. See [BUILD-ROADMAP.md](BUILD-ROADMAP.md) for ordered requirements.
 
 ## Progress log
 
@@ -47,9 +48,18 @@ Current phase: 12 - Device Credential System
 - Date: 2026-10-23.
 - Implementation: Added the authenticated, role-aware device directory and detail page; search and customer/store/platform/status/recent-seen filters; rename, same-customer store move, disable, reactivate, and permanent revoke actions; per-device activity; and audit entries. State changes use row locks, revoked devices cannot be edited or moved, and Store/Customer device lists link to the detail page.
 - Verification: 6 focused feature tests passed, 49 assertions; full suite passed with 63 tests and 398 assertions; targeted Pint, route-list inspection, and `git diff --check` passed.
+- Commit: `81bd0ef` - `Add device administration workflows`.
+- Known risks: “Offline” uses a temporary 24-hour last-seen threshold until Phase 13 heartbeat and Phase 24 settings define cadence.
+- Next: Implement Phase 13 heartbeat and config APIs.
+
+### Phase 12 - Device Credential System
+
+- Date: 2026-10-23.
+- Implementation: Added high-entropy `sypd_` bearer credentials, one-way hash storage, one-time provisioning-token exchange with hashed `jti` replay tracking, active-device/store/customer checks, authentication middleware, safe credential rotation and revocation endpoints, and cascading admin device revocation. API responses are `no-store`; credentials are accepted only in Authorization headers and never in URLs. Credential lifecycle changes are audited.
+- Verification: 6 focused credential tests passed, 45 assertions; full suite passed with 69 tests and 443 assertions; SQLite `migrate:fresh`, targeted Pint, route-list inspection, and `git diff --check` passed.
 - Commit: Pending.
-- Known risks: “Offline” uses a temporary 24-hour last-seen threshold until Phase 13 heartbeat and Phase 24 settings define cadence. Credential authentication/revocation enforcement is Phase 12.
-- Next: Implement Phase 12 device credentials.
+- Scope note: Credentials authorize Router control-plane calls. Customer POS sales traffic still connects directly to the customer VPS. Heartbeat and config routes are Phase 13.
+- Next: Implement Phase 13 heartbeat and config APIs.
 
 ### Build harness and repository guidance
 

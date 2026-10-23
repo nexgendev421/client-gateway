@@ -136,6 +136,9 @@ class DeviceController extends Controller
             abort_unless(in_array($locked->status, $allowed, true), 409);
             $old = $locked->status;
             $locked->update(['status' => $to]);
+            if ($to === DeviceStatus::Revoked) {
+                $locked->credentials()->whereNull('revoked_at')->update(['revoked_at' => now(), 'updated_at' => now()]);
+            }
             $this->audit($locked, $action, $request, ['from_status' => $old->value, 'to_status' => $to->value]);
         });
 

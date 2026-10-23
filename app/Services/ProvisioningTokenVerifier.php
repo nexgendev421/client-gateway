@@ -54,7 +54,8 @@ class ProvisioningTokenVerifier
             throw new ProvisioningTokenVerificationException;
         }
 
-        $publicKeyPath = config('provisioning.public_keys.'.$header['kid']);
+        $publicKeys = config('provisioning.public_keys', []);
+        $publicKeyPath = is_array($publicKeys) ? ($publicKeys[$header['kid']] ?? null) : null;
         $publicKeyPem = is_string($publicKeyPath) && $publicKeyPath !== '' ? @file_get_contents($publicKeyPath) : false;
         if (! is_string($publicKeyPem) || $publicKeyPem === '') {
             throw new ProvisioningTokenVerificationException;

@@ -45,6 +45,14 @@ The Router's `ProvisioningTokenVerifier` implements the token format, signature,
 
 Activation is unavailable if the Router cannot load its signing key. In production, configure and verify the key before issuing activation codes. The customer POS must continue serving already-provisioned, validly licensed stores if the Router is unavailable.
 
+## Router device credentials
+
+After the customer POS has received the provisioning token, the client exchanges that token with `POST /api/v1/device/credentials` using an HTTPS `Authorization: Bearer` header. The Router verifies the RS256 token, confirms the active device and store binding, and atomically consumes the token's `jti` (only its SHA-256 hash is stored). It returns a new long-lived `sypd_` bearer credential once, with `Cache-Control: no-store, private`. The plaintext credential must be stored securely by the client and must not be logged.
+
+The Router stores only a one-way hash of the credential, a short lookup prefix, timestamps, and its device relationship. Authenticated device requests use the Authorization header; credentials are never accepted in URLs. Credentials authenticate only while the linked device, store, and customer are active. `POST /api/v1/device/credential/rotate` revokes prior credentials and returns the replacement once. `POST /api/v1/device/credential/revoke` invalidates the current credential. Admin revocation of a Device also revokes all its credentials. These endpoints are rate-limited.
+
+The customer POS separately validates and consumes the same provisioning token in its own registration database. Router-side `jti` consumption protects the credential exchange; local POS-side consumption protects local registration. The resulting Router credential is for control-plane APIs such as heartbeat and config, not for routing POS sales.
+
 ## Local development
 
 Tests generate ephemeral RSA keys in the operating system temporary directory. For a local activation smoke test, create a development-only key pair outside the repository, configure the private-key variables and matching public-key map, and never reuse development keys in production.

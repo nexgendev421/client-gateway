@@ -178,7 +178,7 @@ Audit all actions.
 Add tests.
 
 ==================================================
-## Phase 12 — DEVICE CREDENTIAL SYSTEM — IN PROGRESS
+## Phase 12 — DEVICE CREDENTIAL SYSTEM — COMPLETED
 ==================================================
 
 Implement secure long-lived device authentication.
@@ -206,7 +206,7 @@ Tests:
 - rotation
 
 ==================================================
-## Phase 13 — DEVICE HEARTBEAT + CONFIG API — PENDING
+## Phase 13 — DEVICE HEARTBEAT + CONFIG API — IN PROGRESS
 ==================================================
 
 Implement:
