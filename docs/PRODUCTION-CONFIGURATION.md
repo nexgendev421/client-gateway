@@ -4,7 +4,7 @@ Use this guide when creating a production `.env`. Keep the file outside source c
 
 ## Application and HTTPS
 
-Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://router.example.com`, and a generated environment-specific `APP_KEY`. Set `ROUTER_PROVISIONING_ISSUER` to the same canonical HTTPS origin. Never use a wildcard or customer POS endpoint as the issuer. Terminate TLS with a trusted certificate and redirect HTTP to HTTPS at the edge.
+Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://router.example.com`, and a generated environment-specific `APP_KEY`. Set `ROUTER_REQUIRE_SUPER_ADMIN_MFA=true` in production; the safe config default is also `true`. Set `ROUTER_PROVISIONING_ISSUER` to the same canonical HTTPS origin. Never use a wildcard or customer POS endpoint as the issuer. Terminate TLS with a trusted certificate and redirect HTTP to HTTPS at the edge.
 
 If a reverse proxy or Cloudflare sits in front of Laravel, configure trusted proxies to the actual proxy address ranges in the web server/Laravel deployment. The current application does not trust forwarded proxy headers globally by default. Do not enable trust-all proxies on an origin reachable directly from the internet. Ensure the origin firewall accepts web traffic only from the intended proxy when that topology is used. Validate that Laravel sees HTTPS so secure cookies and HSTS work.
 
@@ -37,6 +37,7 @@ After updating environment/configuration, run `php artisan config:cache`, `php a
 ```dotenv
 APP_ENV=production
 APP_DEBUG=false
+ROUTER_REQUIRE_SUPER_ADMIN_MFA=true
 APP_URL=https://router.example.com
 APP_KEY=<unique-generated-secret>
 ROUTER_PROVISIONING_ISSUER=https://router.example.com

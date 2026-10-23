@@ -2,7 +2,7 @@
 
 SiyazPOS Router supports time-based one-time passwords (TOTP) from standard authenticator apps. TOTP secrets are encrypted using Laravel's application encryption key. Recovery codes are individually hashed and can each be used once. Secret-bearing setup and recovery responses use `Cache-Control: no-store`.
 
-Super administrators must enrol before they can use the admin area. Other admin roles can enable MFA from **Security** in the admin header. Sign-ins for an enrolled account require an authenticator or unused recovery code. MFA challenges expire after ten minutes and are rate-limited per account and IP.
+Super administrators must enrol before they can use the admin area by default. For local development only, set `ROUTER_REQUIRE_SUPER_ADMIN_MFA=false` to skip mandatory enrolment; production should keep it `true`. Other admin roles can enable MFA from **Security** in the admin header. Sign-ins for an enrolled account require an authenticator or unused recovery code. MFA challenges expire after ten minutes and are rate-limited per account and IP.
 
 ## Setup
 

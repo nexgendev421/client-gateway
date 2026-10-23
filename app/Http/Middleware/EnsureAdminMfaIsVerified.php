@@ -25,7 +25,9 @@ class EnsureAdminMfaIsVerified
             return redirect()->route('login')->withErrors(['email' => 'Please sign in again to verify your administrator account.']);
         }
 
-        if ($user->role === AdminRole::SuperAdmin && ! $user->hasMfaEnabled()
+        if (config('security.require_super_admin_mfa')
+            && $user->role === AdminRole::SuperAdmin
+            && ! $user->hasMfaEnabled()
             && ! $request->routeIs('admin.mfa.setup', 'admin.mfa.setup.begin', 'admin.mfa.setup.confirm')) {
             return redirect()->route('admin.mfa.setup');
         }

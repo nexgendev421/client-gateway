@@ -54,7 +54,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
         $this->recordLoginEvent($user, 'admin.login_succeeded', $request, ['mfa_verified' => false]);
-        if ($user->role === AdminRole::SuperAdmin) {
+        if ($user->role === AdminRole::SuperAdmin && config('security.require_super_admin_mfa')) {
             return redirect()->route('admin.mfa.setup');
         }
 

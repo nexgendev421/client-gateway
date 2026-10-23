@@ -21,7 +21,7 @@ SiyazPOS Router is a control plane. It stores customer/store configuration, devi
 
 ## Security controls in the application
 
-- Admin authentication uses sessions, CSRF protection, login throttling, active-account checks, role authorization, and MFA controls. Super administrators require MFA. Long-term remember-me is not enabled by default.
+- Admin authentication uses sessions, CSRF protection, login throttling, active-account checks, role authorization, and MFA controls. Super administrators require MFA by default (and in production); local development may explicitly set `ROUTER_REQUIRE_SUPER_ADMIN_MFA=false`. Long-term remember-me is not enabled by default.
 - Device activation codes are stored as hashes, rate limited, expiry and use-count checked transactionally, and only shown once. Device credentials are high entropy, stored as hashes, and revocable/rotatable.
 - Provisioning exchange verifies an RS256 signature, issuer, audience, purpose, timing claims, and one-time token ID. Licence documents are signed and contain no customer POS transactional data.
 - POS health checks accept public HTTPS endpoint hosts only in production, resolve and validate public addresses, pin those addresses for the request, refuse redirects, verify TLS, apply short timeouts, and cap response bodies.

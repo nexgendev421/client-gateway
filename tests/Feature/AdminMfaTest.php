@@ -24,6 +24,7 @@ class AdminMfaTest extends TestCase
 
     public function test_super_admin_without_mfa_is_forced_to_enrol_after_login(): void
     {
+        config(['security.require_super_admin_mfa' => true]);
         $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
         $admin->forceFill(['mfa_secret' => null, 'mfa_enabled_at' => null])->save();
 
@@ -31,6 +32,18 @@ class AdminMfaTest extends TestCase
             ->assertRedirect(route('admin.mfa.setup'));
         $this->assertAuthenticatedAs($admin);
         $this->get(route('dashboard'))->assertRedirect(route('admin.mfa.setup'));
+    }
+
+    public function test_super_admin_mfa_can_be_skipped_when_local_policy_is_disabled(): void
+    {
+        config(['security.require_super_admin_mfa' => false]);
+        $admin = User::factory()->withRole(AdminRole::SuperAdmin)->create();
+        $admin->forceFill(['mfa_secret' => null, 'mfa_enabled_at' => null])->save();
+
+        $this->post(route('login.store'), ['email' => $admin->email, 'password' => 'password'])
+            ->assertRedirect(route('dashboard'));
+        $this->assertAuthenticatedAs($admin);
+        $this->get(route('dashboard'))->assertOk();
     }
 
     public function test_enabled_admin_must_complete_totp_challenge_before_access(): void
