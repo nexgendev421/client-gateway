@@ -91,6 +91,13 @@
 
             form.addEventListener('submit', async event => {
                 event.preventDefault();
+                const hasNativeBridge = (window.chrome && window.chrome.webview && typeof window.chrome.webview.postMessage === 'function')
+                    || (window.SiyazPOSBridge && typeof window.SiyazPOSBridge.onActivationCompleted === 'function');
+                if (!hasNativeBridge) {
+                    errorBox.textContent = 'Open this activation page inside the SiyazPOS app. A browser alone cannot finish connecting this device to your store.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
                 errorBox.classList.add('hidden');
                 successBox.classList.add('hidden');
                 progressList.classList.remove('hidden');
@@ -139,6 +146,8 @@
                     } else if (window.SiyazPOSBridge && typeof window.SiyazPOSBridge.onActivationCompleted === 'function') {
                         window.SiyazPOSBridge.onActivationCompleted(JSON.stringify(message));
                     } else {
+                        // The submit guard normally prevents browser-only activation.
+                        // Keep this event for hosts that attach their bridge during handoff.
                         window.dispatchEvent(new CustomEvent('siyazpos-activation-completed', {detail: payload}));
                     }
                     form.elements.activation_code.value = '';

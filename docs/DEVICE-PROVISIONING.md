@@ -1,6 +1,6 @@
 # Device Provisioning Token Contract
 
-SiyazPOS Router issues a short-lived, asymmetrically signed token after an activation code successfully registers a device. The separate customer POS installation verifies this token during first-run device registration. After provisioning, Windows and Android clients connect directly to their assigned POS endpoint; the Router does not proxy ordinary sales traffic.
+SiyazPOS Router issues a short-lived, asymmetrically signed token after an activation code successfully registers a device. The separate customer POS installation verifies this token during first-run device registration at `POST /api/router/devices/register`. After provisioning, Windows and Android clients connect directly to their assigned POS endpoint; the Router does not proxy ordinary sales traffic.
 
 ## Token format
 
@@ -21,17 +21,17 @@ The token contains no password, device credential, activation code, or customer 
 
 ## Verification contract for customer POS
 
-The customer POS implementation is a separate project. Its first-run registration endpoint should:
+The customer POS implementation is a separate project. Its first-run registration endpoint:
 
 1. Parse the JWT without trusting decoded values.
 2. Require RS256, an accepted `kid`, the configured Router issuer, `aud=customer-pos`, and `purpose=device_provisioning`.
 3. Verify the signature against the public key for that `kid` before acting on claims.
 4. Enforce `iat` and `exp` with a small clock-skew allowance; reject expired and implausibly future-issued tokens.
 5. Require non-empty `store_code`, `device_id`, and `jti`, then bind registration to those identities.
-6. Atomically record `jti` as consumed with local device registration. Reject replayed identifiers.
+6. Atomically record a hash of `jti` with local device registration. Reject reuse for another device or changed registration data; an exact retry may return the existing registration without creating another record.
 7. Return a generic registration failure and never log the token.
 
-The Router's `ProvisioningTokenVerifier` implements the token format, signature, issuer, audience, purpose, identity, expiry, and key-selection checks for reuse and contract testing. It does not implement a customer POS endpoint or replay storage; replay prevention belongs in the receiving POS installation.
+The Router's `ProvisioningTokenVerifier` implements the token format, signature, issuer, audience, purpose, identity, expiry, and key-selection checks for reuse and contract testing. SiyazPOS implements the receiving health and registration endpoints and local replay storage; see `pos/docs/ROUTER-INTEGRATION.md`.
 
 ## Key storage and rotation
 

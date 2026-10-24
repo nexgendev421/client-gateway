@@ -16,6 +16,8 @@ class DeviceActivationUiTest extends TestCase
             ->assertSee('Activation code')
             ->assertSee('Connect Store')
             ->assertSee('device-id')
+            ->assertSee('hasNativeBridge')
+            ->assertSee('Open this activation page inside the SiyazPOS app.')
             ->assertSee('siyazpos-activation-completed')
             ->assertDontSee('provisioning_token');
     }
