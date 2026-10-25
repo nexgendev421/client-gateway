@@ -5,12 +5,14 @@ use App\Http\Controllers\Api\DeviceControlController;
 use App\Http\Controllers\Api\DeviceCredentialController;
 use App\Http\Controllers\Api\LicenceRefreshController;
 use App\Http\Controllers\Api\PosLicenceRefreshController;
+use App\Http\Controllers\Api\PosLicenceKeysController;
 use App\Http\Middleware\AuthenticateDeviceCredential;
 use App\Http\Middleware\AuthenticateStoreServerCredential;
 use Illuminate\Support\Facades\Route;
 
 // Versioned APIs for public device provisioning and client control-plane calls.
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
+    Route::get('/pos/licence-keys', PosLicenceKeysController::class)->middleware('throttle:60,1')->name('pos.licence.keys');
     Route::post('/activate', [ActivationController::class, 'activate'])
         ->middleware('throttle:device-activation')
         ->name('activate');

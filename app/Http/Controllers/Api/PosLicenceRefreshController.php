@@ -20,6 +20,7 @@ class PosLicenceRefreshController extends Controller
         if (! $licence instanceof Licence) {
             return response()->json([
                 'state' => 'unlicensed',
+                'store_code' => strtoupper($store->store_code),
                 'signed_licence' => null,
                 'issued_at' => now()->toIso8601String(),
             ])->header('Cache-Control', 'no-store, private');
@@ -34,6 +35,7 @@ class PosLicenceRefreshController extends Controller
 
         return response()->json([
             'state' => $licence->status->value,
+            'store_code' => strtoupper($store->store_code),
             'signed_licence' => $signed['token'],
             'issued_at' => $signed['issued_at'],
             'valid_until' => $licence->valid_until->toIso8601String(),

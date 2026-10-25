@@ -91,19 +91,19 @@
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div>
                 <h2 class="text-sm font-semibold">POS server licence connection</h2>
-                <p class="mt-1 max-w-2xl text-xs leading-5 text-slate-500">Create a private credential for this POS server to securely fetch its signed licence. The full credential is shown once. Keep it in the POS server environment file, never in an app or browser setting.</p>
+                <p class="mt-1 max-w-2xl text-xs leading-5 text-slate-500">Generate a one-time POS connection code. Enter it once in Settings → Licence on this store’s POS server. The POS will find this store and set up its licence automatically.</p>
                 @php($serverCredential = $store->serverCredentials()->whereNull('revoked_at')->latest('id')->first())
                 @if ($serverCredential)
-                    <p class="mt-2 text-xs text-emerald-700">Connected credential ending {{ substr($serverCredential->token_prefix, -4) }} · Last used {{ $serverCredential->last_used_at?->diffForHumans() ?? 'not yet' }}.</p>
+                    <p class="mt-2 text-xs text-emerald-700">A POS connection code has been issued (ending {{ substr($serverCredential->token_prefix, -4) }}) · Last used {{ $serverCredential->last_used_at?->diffForHumans() ?? 'not yet' }}.</p>
                 @else
-                    <p class="mt-2 text-xs text-amber-700">No POS server credential has been issued.</p>
+                    <p class="mt-2 text-xs text-amber-700">No POS connection code has been issued yet.</p>
                 @endif
             </div>
             @can('update', $store)
                 <form method="POST" action="{{ route('admin.stores.licence-credential.issue', $store) }}" @if ($serverCredential) onsubmit="return confirm('Rotate this credential? The current POS server credential will stop working immediately.')" @endif>
                     @csrf
                     @if ($serverCredential)<input type="hidden" name="rotate" value="1">@endif
-                    <button class="shrink-0 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-sm font-medium text-blue-800 hover:bg-blue-100">{{ $serverCredential ? 'Rotate credential' : 'Generate credential' }}</button>
+                    <button class="shrink-0 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-sm font-medium text-blue-800 hover:bg-blue-100">{{ $serverCredential ? 'Create new connection code' : 'Generate POS connection code' }}</button>
                 </form>
             @endcan
         </div>
