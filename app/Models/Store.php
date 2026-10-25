@@ -55,6 +55,11 @@ class Store extends Model
         return $this->hasMany(ActivationCode::class);
     }
 
+    public function serverCredentials(): HasMany
+    {
+        return $this->hasMany(StoreServerCredential::class);
+    }
+
     public function healthChecks(): HasMany
     {
         return $this->hasMany(HealthCheck::class);

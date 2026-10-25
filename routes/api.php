@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\ActivationController;
 use App\Http\Controllers\Api\DeviceControlController;
 use App\Http\Controllers\Api\DeviceCredentialController;
 use App\Http\Controllers\Api\LicenceRefreshController;
+use App\Http\Controllers\Api\PosLicenceRefreshController;
 use App\Http\Middleware\AuthenticateDeviceCredential;
+use App\Http\Middleware\AuthenticateStoreServerCredential;
 use Illuminate\Support\Facades\Route;
 
 // Versioned APIs for public device provisioning and client control-plane calls.
@@ -24,4 +26,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('/config', [DeviceControlController::class, 'config'])->name('config');
         Route::get('/licence', LicenceRefreshController::class)->name('licence.refresh');
     });
+    Route::middleware([AuthenticateStoreServerCredential::class, 'throttle:device-api'])
+        ->get('/pos/licence', PosLicenceRefreshController::class)
+        ->name('pos.licence.refresh');
 });

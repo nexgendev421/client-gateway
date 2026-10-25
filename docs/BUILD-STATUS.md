@@ -256,3 +256,10 @@ Current phase: Complete (Phases 1-33)
 - Finding: First local sign-in attempt revealed the XAMPP `.env` referenced a nonexistent Router database/account. After creating a dedicated local account, MariaDB 10.4 exposed legacy implicit `TIMESTAMP` defaults in required date fields and its `mysql.db` privilege table was marked crashed.
 - Resolution: Backed up and repaired the local MariaDB privilege table, created a least-privilege `siyazpos_router` database account, changed required application dates in fresh-install migrations to `DATETIME`, and reran all 20 migrations successfully. Created a local super-admin account; no credentials are recorded here.
 - Verification: Full suite passed with 134 tests and 884 assertions; `migrate:status` showed all migrations ran, MariaDB confirmed one active super admin and 20 application tables, and `http://localhost:8001/login` returned HTTP 200 with the login form.
+
+### POS server licence integration
+
+- Date: 2026-10-25.
+- Implementation: Added per-Store POS-server bearer credentials (one-time display, bcrypt hash at rest, rotation, audit trail) and a rate-limited `GET /api/v1/pos/licence` endpoint. Signed documents are now bound to Store ID/code and carry refresh/offline deadlines. Existing device-scoped licence refresh remains supported.
+- Security: Router stores no POS transactions. POS-server credentials are not included in API responses or audit records. No production deploy or push was performed.
+- Verification: Router suite passed: 140 tests, 921 assertions. POS suite passed: 12 tests, 64 assertions. Route listings confirmed the new API/admin endpoints. Pint passed for new/modified application classes; `git diff --check` passed.

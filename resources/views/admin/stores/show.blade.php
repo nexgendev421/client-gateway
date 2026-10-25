@@ -39,6 +39,7 @@
             </div>
         </div>
         @if (session('status'))<div role="status" class="mx-5 mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 sm:mx-6">{{ session('status') }}</div>@endif
+        @if ($errors->has('licence_credential'))<div role="alert" class="mx-5 mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:mx-6">{{ $errors->first('licence_credential') }}</div>@endif
     </section>
 
     <nav aria-label="Store sections" class="mt-4 flex gap-1 border-b border-slate-200">
@@ -85,6 +86,28 @@
             <dl class="mt-4 space-y-3 text-sm"><div class="flex justify-between gap-3"><dt class="text-slate-500">Store code</dt><dd class="font-mono font-medium">{{ $store->store_code }}</dd></div><div class="flex justify-between gap-3"><dt class="text-slate-500">Created</dt><dd class="text-right">{{ $store->created_at->format('j M Y') }}</dd></div><div class="flex justify-between gap-3"><dt class="text-slate-500">Updated</dt><dd class="text-right">{{ $store->updated_at->format('j M Y') }}</dd></div></dl>
         </section>
     </div>
+
+    <section class="mt-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+                <h2 class="text-sm font-semibold">POS server licence connection</h2>
+                <p class="mt-1 max-w-2xl text-xs leading-5 text-slate-500">Create a private credential for this POS server to securely fetch its signed licence. The full credential is shown once. Keep it in the POS server environment file, never in an app or browser setting.</p>
+                @php($serverCredential = $store->serverCredentials()->whereNull('revoked_at')->latest('id')->first())
+                @if ($serverCredential)
+                    <p class="mt-2 text-xs text-emerald-700">Connected credential ending {{ substr($serverCredential->token_prefix, -4) }} · Last used {{ $serverCredential->last_used_at?->diffForHumans() ?? 'not yet' }}.</p>
+                @else
+                    <p class="mt-2 text-xs text-amber-700">No POS server credential has been issued.</p>
+                @endif
+            </div>
+            @can('update', $store)
+                <form method="POST" action="{{ route('admin.stores.licence-credential.issue', $store) }}" @if ($serverCredential) onsubmit="return confirm('Rotate this credential? The current POS server credential will stop working immediately.')" @endif>
+                    @csrf
+                    @if ($serverCredential)<input type="hidden" name="rotate" value="1">@endif
+                    <button class="shrink-0 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-sm font-medium text-blue-800 hover:bg-blue-100">{{ $serverCredential ? 'Rotate credential' : 'Generate credential' }}</button>
+                </form>
+            @endcan
+        </div>
+    </section>
 
     <section id="devices" class="mt-5 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <header class="border-b border-slate-200 px-5 py-4"><h2 class="text-sm font-semibold">Registered devices</h2><p class="mt-1 text-xs text-slate-500">Showing up to 20 devices linked to this store.</p></header>

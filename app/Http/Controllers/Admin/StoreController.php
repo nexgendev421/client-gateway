@@ -12,9 +12,12 @@ use App\Models\Store;
 use App\Services\HealthCheckInProgress;
 use App\Services\LicenceLimitService;
 use App\Services\PosEndpointHealthChecker;
+use App\Services\StoreServerCredentialException;
+use App\Services\StoreServerCredentialService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -217,6 +220,26 @@ class StoreController extends Controller
             : 'Connection test completed: '.$check->safe_error_message;
 
         return redirect()->route('admin.stores.show', $store)->with('status', $message);
+    }
+
+    public function issueLicenceCredential(Request $request, Store $store, StoreServerCredentialService $credentials): View|RedirectResponse|Response
+    {
+        $this->authorize('update', $store);
+        $rotate = $request->boolean('rotate');
+
+        try {
+            $issued = $credentials->issue($store, $request->user(), $request->ip(), $rotate);
+        } catch (StoreServerCredentialException) {
+            return redirect()->route('admin.stores.show', $store)->withErrors([
+                'licence_credential' => 'A POS server credential already exists. Rotate it to replace the current credential.',
+            ]);
+        }
+
+        return response()->view('admin.stores.licence-credential-issued', [
+            'store' => $store,
+            'token' => $issued['token'],
+        ])->header('Cache-Control', 'no-store, private, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 
     private function recordAudit(Store $store, string $action, Request $request, array $metadata): void

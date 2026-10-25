@@ -140,6 +140,21 @@ PHP);
         $this->assertSame(1, openssl_verify(explode('.', $issued['token'])[0].'.'.$claimsPart, $this->decode($signaturePart), $publicKey, OPENSSL_ALGO_SHA256));
     }
 
+    public function test_pos_server_licence_document_is_bound_to_one_store_and_has_offline_deadlines(): void
+    {
+        $licence = Licence::factory()->create();
+        $store = Store::factory()->for($licence->customer)->create(['store_code' => 'greenhd01']);
+        $issued = app(LicenceTokenIssuer::class)->issue($licence, $store);
+        [, $claimsPart] = explode('.', $issued['token']);
+        $claims = json_decode($this->decode($claimsPart), true, 32, JSON_THROW_ON_ERROR);
+
+        $this->assertSame((string) $store->id, $claims['store_id']);
+        $this->assertSame('GREENHD01', $claims['store_code']);
+        $this->assertGreaterThan($claims['iat'], $claims['refresh_after']);
+        $this->assertGreaterThan($claims['refresh_after'], $claims['offline_until']);
+        $this->assertLessThanOrEqual(72 * 3600 + 5, $claims['offline_until'] - $claims['iat']);
+    }
+
     public function test_provisioning_tokens_continue_to_use_the_shared_signer(): void
     {
         $store = Store::factory()->create();

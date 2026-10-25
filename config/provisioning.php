@@ -10,4 +10,5 @@ return [
     'public_keys' => json_decode((string) env('ROUTER_PROVISIONING_PUBLIC_KEYS', '{}'), true) ?: [],
     'clock_skew_seconds' => 30,
     'ttl_seconds' => 300,
+    'licence_offline_grace_hours' => max(1, (int) env('ROUTER_LICENCE_OFFLINE_GRACE_HOURS', 72)),
 ];

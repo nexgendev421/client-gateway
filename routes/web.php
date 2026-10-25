@@ -70,6 +70,7 @@ Route::middleware(['auth', EnsureAdminIsActive::class, EnsureAdminMfaIsVerified:
     Route::post('/admin/stores/{store}/suspend', [StoreController::class, 'suspend'])->whereNumber('store')->name('admin.stores.suspend');
     Route::post('/admin/stores/{store}/reactivate', [StoreController::class, 'reactivate'])->whereNumber('store')->name('admin.stores.reactivate');
     Route::post('/admin/stores/{store}/test-connection', [StoreController::class, 'testConnection'])->whereNumber('store')->name('admin.stores.test-connection');
+    Route::post('/admin/stores/{store}/licence-credential', [StoreController::class, 'issueLicenceCredential'])->whereNumber('store')->name('admin.stores.licence-credential.issue');
     Route::get('/admin/stores/{store}/activation-codes', [ActivationCodeController::class, 'storeIndex'])->whereNumber('store')->name('admin.stores.activation-codes.index');
     Route::get('/admin/stores/{store}/activation-codes/create', [ActivationCodeController::class, 'create'])->whereNumber('store')->name('admin.stores.activation-codes.create');
     Route::post('/admin/stores/{store}/activation-codes', [ActivationCodeController::class, 'generate'])->whereNumber('store')->name('admin.stores.activation-codes.store');

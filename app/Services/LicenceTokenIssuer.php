@@ -3,18 +3,20 @@
 namespace App\Services;
 
 use App\Models\Licence;
+use App\Models\Store;
 
 class LicenceTokenIssuer
 {
     public function __construct(private readonly AsymmetricJwtSigner $signer) {}
 
     /** @return array{token:string,issued_at:string} */
-    public function issue(Licence $licence): array
+    public function issue(Licence $licence, ?Store $store = null): array
     {
         $licence->loadMissing('customer');
+        $store?->loadMissing('customer');
         $issuedAt = now()->timestamp;
 
-        $token = $this->signer->sign([
+        $claims = [
             'iss' => (string) config('provisioning.issuer'),
             'aud' => 'customer-pos',
             'customer_id' => (string) $licence->customer_id,
@@ -31,7 +33,18 @@ class LicenceTokenIssuer
             'iat' => $issuedAt,
             'jti' => bin2hex(random_bytes(16)),
             'purpose' => 'signed_licence',
-        ]);
+            'refresh_after' => now()->addHours(12)->timestamp,
+            'offline_until' => now()->addHours((int) config('provisioning.licence_offline_grace_hours', 72))->timestamp,
+        ];
+        if ($store !== null) {
+            if ((int) $store->customer_id !== (int) $licence->customer_id) {
+                throw new ProvisioningTokenException;
+            }
+            $claims['store_id'] = (string) $store->getKey();
+            $claims['store_code'] = $store->store_code;
+        }
+
+        $token = $this->signer->sign($claims);
 
         return [
             'token' => $token,

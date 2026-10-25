@@ -29,6 +29,8 @@ class LicenceRefreshController extends Controller
         }
 
         try {
+            // Device clients keep the existing customer-scoped document contract.
+            // POS-server polling uses the separate Store-bound endpoint.
             $signed = $tokens->issue($licence);
         } catch (ProvisioningTokenException) {
             return response()->json(['message' => 'Licence refresh is temporarily unavailable.'], 503);
