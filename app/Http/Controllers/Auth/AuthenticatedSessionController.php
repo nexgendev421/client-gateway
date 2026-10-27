@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
 
         $credentials['status'] = AdminStatus::Active->value;
 
-        if (! Auth::attempt($credentials, false)) {
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             $this->recordLoginEvent(null, 'admin.login_failed', $request, ['reason' => 'credentials_rejected']);
 
             return back()

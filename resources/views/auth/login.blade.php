@@ -34,6 +34,10 @@
                         <label for="password" class="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
                         <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100">
                     </div>
+                    <label for="remember" class="flex items-center gap-2 text-sm text-slate-600">
+                        <input id="remember" name="remember" type="checkbox" value="1" @checked(old('remember')) class="rounded border-slate-300 text-blue-700 focus:ring-blue-600">
+                        Remember me on this device
+                    </label>
                     <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200">Sign in</button>
                 </form>
             </div>
