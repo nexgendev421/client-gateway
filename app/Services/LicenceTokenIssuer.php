@@ -27,6 +27,7 @@ class LicenceTokenIssuer
             'starts_at' => $licence->starts_at->timestamp,
             'valid_until' => $licence->valid_until->timestamp,
             'grace_until' => $licence->grace_until?->timestamp,
+            'emergency_extended_at' => $licence->emergency_extended_at?->timestamp,
             'max_stores' => $licence->max_stores,
             'max_devices' => $licence->max_devices,
             'features' => $this->safeFeatures($licence->metadata ?? []),

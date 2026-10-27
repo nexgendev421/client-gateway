@@ -104,6 +104,10 @@ class LicenceController extends Controller
             $locked = Licence::query()->lockForUpdate()->findOrFail($licence->getKey());
             $before = $this->safeSnapshot($locked, $changed);
             $locked->update($data);
+            if (array_key_exists('valid_until', $data)) {
+                $locked->emergency_extended_at = null;
+                $locked->save();
+            }
             $this->audit($locked, 'licence.updated', $request, [
                 'changed_fields' => $changed,
                 'before' => $before,
@@ -141,6 +145,7 @@ class LicenceController extends Controller
                 }
             }
             $locked->valid_until = $newExpiry;
+            $locked->emergency_extended_at = now();
             $locked->save();
             $this->audit($locked, 'licence.extended', $request, [
                 'from_valid_until' => $oldExpiry->toIso8601String(),
