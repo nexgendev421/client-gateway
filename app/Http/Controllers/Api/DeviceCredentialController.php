@@ -7,6 +7,7 @@ use App\Models\DeviceCredential;
 use App\Services\DeviceCredentialException;
 use App\Services\DeviceCredentialService;
 use App\Services\DeviceProvisioningExchangeService;
+use App\Services\DeviceProvisioningTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -29,6 +30,22 @@ class DeviceCredentialController extends Controller
         }
 
         return response()->json($issued, 201)->header('Cache-Control', 'no-store, private');
+    }
+
+    public function issueProvisioningToken(Request $request, DeviceProvisioningTokenService $tokens): JsonResponse
+    {
+        /** @var DeviceCredential $credential */
+        $credential = $request->attributes->get('device_credential');
+
+        try {
+            $issued = $tokens->issueFor($credential->device, $request->ip());
+        } catch (DeviceCredentialException) {
+            return $this->unauthorized();
+        } catch (Throwable) {
+            return response()->json(['message' => 'Device provisioning is temporarily unavailable.'], 503);
+        }
+
+        return response()->json($issued)->header('Cache-Control', 'no-store, private');
     }
 
     public function rotate(Request $request, DeviceCredentialService $credentials): JsonResponse

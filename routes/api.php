@@ -4,8 +4,8 @@ use App\Http\Controllers\Api\ActivationController;
 use App\Http\Controllers\Api\DeviceControlController;
 use App\Http\Controllers\Api\DeviceCredentialController;
 use App\Http\Controllers\Api\LicenceRefreshController;
-use App\Http\Controllers\Api\PosLicenceRefreshController;
 use App\Http\Controllers\Api\PosLicenceKeysController;
+use App\Http\Controllers\Api\PosLicenceRefreshController;
 use App\Http\Middleware\AuthenticateDeviceCredential;
 use App\Http\Middleware\AuthenticateStoreServerCredential;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +25,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
     Route::middleware([AuthenticateDeviceCredential::class, 'throttle:device-api'])->prefix('device')->name('device.')->group(function (): void {
         Route::post('/heartbeat', [DeviceControlController::class, 'heartbeat'])->name('heartbeat');
+        Route::post('/provisioning-token', [DeviceCredentialController::class, 'issueProvisioningToken'])->name('provisioning-token.issue');
         Route::get('/config', [DeviceControlController::class, 'config'])->name('config');
         Route::get('/licence', LicenceRefreshController::class)->name('licence.refresh');
     });

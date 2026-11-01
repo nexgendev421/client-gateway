@@ -8,7 +8,9 @@ use App\Models\Device;
 use App\Models\Licence;
 use App\Models\SystemSetting;
 use App\Services\DeviceCredentialService;
+use App\Services\ProvisioningTokenIssuer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
 use Tests\TestCase;
 
 class DeviceControlApiTest extends TestCase
@@ -90,6 +92,47 @@ class DeviceControlApiTest extends TestCase
         $this->assertArrayNotHasKey('id', $response->json('device'));
         $this->assertArrayNotHasKey('token', $response->json());
         $this->assertNotNull($license->fresh());
+    }
+
+    public function test_active_device_can_request_a_short_lived_replacement_registration_token(): void
+    {
+        $device = Device::factory()->create(['platform' => 'android']);
+        $credential = app(DeviceCredentialService::class)->issue($device);
+        $expiresAt = now()->addMinutes(5)->toIso8601String();
+
+        $issuer = Mockery::mock(ProvisioningTokenIssuer::class);
+        $issuer->shouldReceive('issue')
+            ->once()
+            ->withArgs(fn ($store, $issuedDevice): bool => $store->is($device->store) && $issuedDevice->is($device))
+            ->andReturn(['token' => 'signed.replacement.token', 'expires_at' => $expiresAt]);
+        $this->app->instance(ProvisioningTokenIssuer::class, $issuer);
+
+        $this->postJson(route('api.v1.device.provisioning-token.issue'), [], [
+            'Authorization' => 'Bearer '.$credential['token'],
+        ])->assertOk()
+            ->assertExactJson([
+                'device_reference' => $device->public_id,
+                'provisioning_token' => 'signed.replacement.token',
+                'expires_at' => $expiresAt,
+            ])
+            ->assertHeader('Cache-Control', 'no-store, private');
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'device.provisioning_token_issued',
+            'resource_id' => (string) $device->id,
+        ]);
+    }
+
+    public function test_replacement_registration_token_requires_an_active_authenticated_device(): void
+    {
+        $url = route('api.v1.device.provisioning-token.issue');
+        $this->postJson($url)->assertUnauthorized();
+
+        $device = Device::factory()->create();
+        $credential = app(DeviceCredentialService::class)->issue($device);
+        $device->update(['status' => DeviceStatus::Disabled]);
+
+        $this->postJson($url, [], ['Authorization' => 'Bearer '.$credential['token']])->assertUnauthorized();
     }
 
     public function test_config_returns_safe_platform_update_details_from_admin_settings(): void
